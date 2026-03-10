@@ -1,0 +1,40 @@
+# Scratch / ephemeral
+.scratch/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+.env
+.pytest_cache/
+.ruff_cache/
+fabric-model-readiness/dist/
+fabric-model-readiness/build/
+
+# Node / Electron
+app/node_modules/
+app/dist-electron/
+app/dist-frontend/
+app/release/
+
+# Tool binaries (download separately, see README)
+tools/powerbi-modeling-mcp/extracted/
+tools/pbi-tools/
+
+# Claude Code local settings (machine-specific permissions)
+.claude/settings.local.json
+
+# Personal / working files
+*.png
+*.docx
+*.pdf
+nul
+.obsidian/
+Fundamentals of Software Engineering.md
+Implementation Guide.md
+
+# OS
+Thumbs.db
+.DS_Store

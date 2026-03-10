@@ -1,0 +1,52 @@
+{
+  "model": {
+    "tables": [
+      {
+        "name": "FactSales",
+        "description": "",
+        "columns": [
+          {"name": "SalesKey", "dataType": "int64", "isHidden": false},
+          {"name": "Amount", "dataType": "double", "description": ""},
+          {"name": "OrderDate", "dataType": "dateTime"},
+          {"name": "Year", "dataType": "int64", "summarizeBy": "sum"}
+        ],
+        "measures": [
+          {
+            "name": "Total Sales",
+            "expression": "SUM(FactSales[Amount])",
+            "description": ""
+          }
+        ]
+      },
+      {
+        "name": "DimCustomer",
+        "description": "Customer dimension table",
+        "columns": [
+          {"name": "CustomerKey", "dataType": "int64", "isHidden": true},
+          {"name": "Name", "dataType": "string", "description": "Customer full name"},
+          {"name": "City", "dataType": "string", "description": ""},
+          {"name": "Country", "dataType": "string", "description": ""}
+        ],
+        "measures": []
+      },
+      {
+        "name": "Sheet1",
+        "description": "",
+        "columns": [
+          {"name": "Col1", "dataType": "string"},
+          {"name": "Col2", "dataType": "string"}
+        ],
+        "measures": []
+      }
+    ],
+    "relationships": [
+      {
+        "fromTable": "FactSales",
+        "fromColumn": "CustomerKey",
+        "toTable": "DimCustomer",
+        "toColumn": "CustomerKey",
+        "isActive": true
+      }
+    ]
+  }
+}

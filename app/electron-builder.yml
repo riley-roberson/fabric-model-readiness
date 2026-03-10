@@ -1,0 +1,31 @@
+appId: com.fabricmodel.readiness
+productName: Fabric Model AI Readiness
+copyright: Copyright 2025
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - dist-electron/**/*
+  - dist-frontend/**/*
+
+extraResources:
+  - from: ../fabric-model-readiness/dist/backend/
+    to: backend
+    filter:
+      - "**/*"
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: build/icon.ico
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Fabric Model AI Readiness

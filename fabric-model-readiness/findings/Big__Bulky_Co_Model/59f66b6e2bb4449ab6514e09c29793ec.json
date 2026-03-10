@@ -1,0 +1,49 @@
+{
+  "scan_id": "59f66b6e2bb4449ab6514e09c29793ec",
+  "model_path": "C:\\Users\\RRoberson\\OneDrive - MSNPath\\Documents\\Dashboard Drafts\\CoL Training\\Big + Bulky Co Model.SemanticModel",
+  "timestamp": "2026-03-06T14:38:16.057728Z",
+  "format": "TMDL",
+  "summary": {
+    "critical": 1,
+    "high": 1,
+    "medium": 1,
+    "low": 0,
+    "info": 0,
+    "score": 20.0
+  },
+  "findings": [
+    {
+      "id": "f-b0e5c4",
+      "category": "ai_preparation",
+      "check": "ai_schema_configured",
+      "severity": "critical",
+      "object": "Copilot/schema.json",
+      "object_type": "copilot_schema",
+      "message": "AI schema (Copilot/schema.json) is missing entirely. Copilot needs this to know which fields to use.",
+      "recommendation": "",
+      "auto_fixable": false
+    },
+    {
+      "id": "f-819a29",
+      "category": "ai_preparation",
+      "check": "ai_instructions_present",
+      "severity": "high",
+      "object": "Copilot/Instructions/instructions.md",
+      "object_type": "copilot_instructions",
+      "message": "AI instructions file is missing. Add business context, terminology, and metric preferences.",
+      "recommendation": "",
+      "auto_fixable": true
+    },
+    {
+      "id": "f-70ed8b",
+      "category": "ai_preparation",
+      "check": "verified_answers",
+      "severity": "medium",
+      "object": "Copilot/VerifiedAnswers/",
+      "object_type": "verified_answer",
+      "message": "No verified answers found. Add at least a few verified answers for common business questions.",
+      "recommendation": "",
+      "auto_fixable": false
+    }
+  ]
+}

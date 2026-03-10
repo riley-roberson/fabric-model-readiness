@@ -1,0 +1,1001 @@
+{
+  "modelName": "Big + Bulky Co Model",
+  "sessions": [
+    {
+      "sessionId": "c3a7f1e2-9d4b-4e8a-b6c5-2f0a8d3e7b91",
+      "scanId": "2b5ab75a-7ec7-41b7-8374-fb00777a5080",
+      "timestamp": "2026-02-20T18:30:00.000000+00:00",
+      "preScore": 22,
+      "postScore": null,
+      "appliedTimestamp": "2026-03-09T16:30:00.000000+00:00",
+      "appliedSummary": {
+        "totalAccepted": 106,
+        "appliedViaMCP": 95,
+        "skippedMCPUnsupported": 6,
+        "deferred": 3,
+        "rejected": 0,
+        "notes": "6 AI preparation items (f-088, f-103, f-104, f-105, f-106, f-107) require manual configuration in Power BI Desktop UI. 3 items deferred (f-090, f-091, f-098)."
+      },
+      "changes": [
+        {
+          "findingId": "f-001",
+          "category": "schema_design",
+          "object": "Customer[Name], Store[Name]",
+          "action": "accepted",
+          "description": "Rename ambiguous 'Name' columns to 'Customer Name' and 'Store Name' for disambiguation",
+          "before": null,
+          "after": "Rename Customer[Name] to 'Customer Name' and Store[Name] to 'Store Name'"
+        },
+        {
+          "findingId": "f-002",
+          "category": "schema_design",
+          "object": "Customer[Country], Store[Country]",
+          "action": "accepted",
+          "description": "Rename ambiguous 'Country' columns to 'Customer Country' and 'Store Country'",
+          "before": null,
+          "after": "Rename Customer[Country] to 'Customer Country' and Store[Country] to 'Store Country'"
+        },
+        {
+          "findingId": "f-003",
+          "category": "schema_design",
+          "object": "Customer[State], Store[State]",
+          "action": "accepted",
+          "description": "Rename ambiguous 'State' columns to 'Customer State' and 'Store State'",
+          "before": null,
+          "after": "Rename Customer[State] to 'Customer State' and Store[State] to 'Store State'"
+        },
+        {
+          "findingId": "f-004",
+          "category": "schema_design",
+          "object": "Fact - Sales[Unit Price], Product[Unit Price]",
+          "action": "accepted",
+          "description": "Hide Fact - Sales[Unit Price] since fact table should be hidden; keep Product[Unit Price] visible",
+          "before": null,
+          "after": "Hide 'Fact - Sales'[Unit Price] from user view; keep 'Product'[Unit Price] visible"
+        },
+        {
+          "findingId": "f-005",
+          "category": "schema_design",
+          "object": "Fact - Sales[Unit Cost], Product[Unit Cost]",
+          "action": "accepted",
+          "description": "Hide Fact - Sales[Unit Cost] since fact table should be hidden; keep Product[Unit Cost] visible",
+          "before": null,
+          "after": "Hide 'Fact - Sales'[Unit Cost] from user view; keep 'Product'[Unit Cost] visible"
+        },
+        {
+          "findingId": "f-006",
+          "category": "schema_design",
+          "object": "Fact - Sales",
+          "action": "accepted",
+          "description": "Hide the Fact - Sales table from end users per Power BI Standards",
+          "before": null,
+          "after": "Set Fact - Sales table isHidden = true"
+        },
+        {
+          "findingId": "f-007",
+          "category": "schema_design",
+          "object": "Customer[CustomerKey]",
+          "action": "accepted",
+          "description": "Hide surrogate key CustomerKey on Customer dimension table",
+          "before": null,
+          "after": "Set Customer[CustomerKey] isHidden = true"
+        },
+        {
+          "findingId": "f-008",
+          "category": "schema_design",
+          "object": "Product[ProductKey]",
+          "action": "accepted",
+          "description": "Hide surrogate key ProductKey on Product dimension table",
+          "before": null,
+          "after": "Set Product[ProductKey] isHidden = true"
+        },
+        {
+          "findingId": "f-009",
+          "category": "schema_design",
+          "object": "Store[StoreKey]",
+          "action": "accepted",
+          "description": "Hide surrogate key StoreKey on Store dimension table",
+          "before": null,
+          "after": "Set Store[StoreKey] isHidden = true"
+        },
+        {
+          "findingId": "f-010",
+          "category": "schema_design",
+          "object": "Customer, Date, Product, Store",
+          "action": "accepted",
+          "description": "Create display folders on dimension tables to organize columns logically",
+          "before": null,
+          "after": "Create display folders: Customer (Demographics, Geography, Identity), Date (Calendar, Fiscal), Product (Identity, Pricing, Classification), Store (Identity, Geography, Operations)"
+        },
+        {
+          "findingId": "f-011",
+          "category": "schema_design",
+          "object": "\u2375 Big & Bulky Measures",
+          "action": "accepted",
+          "description": "Create display folders within the measure table to organize measures by business area",
+          "before": null,
+          "after": "Create display folders: Revenue, Cost, Margins within the measure table"
+        },
+        {
+          "findingId": "f-012",
+          "category": "metadata_completeness",
+          "object": "Customer",
+          "action": "accepted",
+          "description": "Add table description to Customer table for Copilot context",
+          "before": null,
+          "after": "Add description: 'Customer dimension table containing demographics, geography, and identity attributes for all customers. Use for filtering and grouping sales by customer attributes.'"
+        },
+        {
+          "findingId": "f-013",
+          "category": "metadata_completeness",
+          "object": "Date",
+          "action": "accepted",
+          "description": "Add table description to Date table for Copilot context",
+          "before": null,
+          "after": "Add description: 'Date dimension table providing calendar hierarchy (Year, Quarter, Month, Day) and working day indicators. Primary date table for all time-based analysis.'"
+        },
+        {
+          "findingId": "f-014",
+          "category": "metadata_completeness",
+          "object": "Fact - Sales",
+          "action": "accepted",
+          "description": "Add table description to Fact - Sales table for Copilot context",
+          "before": null,
+          "after": "Add description: 'Sales fact table containing transactional records with order details, quantities, pricing, and cost data. Grain: one row per order line item.'"
+        },
+        {
+          "findingId": "f-015",
+          "category": "metadata_completeness",
+          "object": "Product",
+          "action": "accepted",
+          "description": "Add table description to Product table for Copilot context",
+          "before": null,
+          "after": "Add description: 'Product dimension table with product attributes including name, brand, manufacturer, category hierarchy, pricing, and physical specifications (weight).'"
+        },
+        {
+          "findingId": "f-016",
+          "category": "metadata_completeness",
+          "object": "Store",
+          "action": "accepted",
+          "description": "Add table description to Store table for Copilot context",
+          "before": null,
+          "after": "Add description: 'Store dimension table with location details (country, state, name), physical attributes (square meters), and operational dates (open/close date, status).'"
+        },
+        {
+          "findingId": "f-017",
+          "category": "metadata_completeness",
+          "object": "\u2375 Big & Bulky Measures",
+          "action": "accepted",
+          "description": "Add table description to the primary measure table",
+          "before": null,
+          "after": "Add description: 'Primary measure table for Big & Bulky Co. Contains core business KPIs including revenue, cost, margin, and sales count measures.'"
+        },
+        {
+          "findingId": "f-018",
+          "category": "metadata_completeness",
+          "object": "\u2302 Local Measures",
+          "action": "accepted",
+          "description": "Add table description to the local measures table",
+          "before": null,
+          "after": "Add description: 'Local measures table for report-specific or page-level calculations. Contains measures scoped to individual report contexts.'"
+        },
+        {
+          "findingId": "f-019",
+          "category": "metadata_completeness",
+          "object": "Customer[CustomerKey]",
+          "action": "accepted",
+          "description": "Add column description for CustomerKey",
+          "before": null,
+          "after": "Add description: 'Surrogate key uniquely identifying each customer. Used for relationships to Fact - Sales. Not intended for end-user analysis.'"
+        },
+        {
+          "findingId": "f-020",
+          "category": "metadata_completeness",
+          "object": "Customer[Gender]",
+          "action": "accepted",
+          "description": "Add column description for Gender",
+          "before": null,
+          "after": "Add description: 'Customer gender classification. Use for demographic segmentation and filtering.'"
+        },
+        {
+          "findingId": "f-021",
+          "category": "metadata_completeness",
+          "object": "Customer[Name]",
+          "action": "accepted",
+          "description": "Add column description for Customer Name",
+          "before": null,
+          "after": "Add description: 'Full name of the customer. Primary identifier for customer-level analysis and lookup.'"
+        },
+        {
+          "findingId": "f-022",
+          "category": "metadata_completeness",
+          "object": "Customer[Address]",
+          "action": "accepted",
+          "description": "Add column description for Address",
+          "before": null,
+          "after": "Add description: 'Street address of the customer. Use for detailed location analysis or mailing purposes.'"
+        },
+        {
+          "findingId": "f-023",
+          "category": "metadata_completeness",
+          "object": "Customer[City]",
+          "action": "accepted",
+          "description": "Add column description for City",
+          "before": null,
+          "after": "Add description: 'City where the customer is located. Part of the geographic hierarchy for regional analysis.'"
+        },
+        {
+          "findingId": "f-024",
+          "category": "metadata_completeness",
+          "object": "Customer[State Code]",
+          "action": "accepted",
+          "description": "Add column description for State Code",
+          "before": null,
+          "after": "Add description: 'Abbreviated state/province code for the customer location. Use State column for display; this is the short code.'"
+        },
+        {
+          "findingId": "f-025",
+          "category": "metadata_completeness",
+          "object": "Customer[State]",
+          "action": "accepted",
+          "description": "Add column description for Customer State",
+          "before": null,
+          "after": "Add description: 'Full state or province name for the customer. Use for geographic grouping and filtering.'"
+        },
+        {
+          "findingId": "f-026",
+          "category": "metadata_completeness",
+          "object": "Customer[Zip Code]",
+          "action": "accepted",
+          "description": "Add column description for Zip Code",
+          "before": null,
+          "after": "Add description: 'Postal or ZIP code for the customer address. Use for fine-grained geographic analysis.'"
+        },
+        {
+          "findingId": "f-027",
+          "category": "metadata_completeness",
+          "object": "Customer[Country Code]",
+          "action": "accepted",
+          "description": "Add column description for Country Code",
+          "before": null,
+          "after": "Add description: 'ISO country code for the customer location. Use Country column for display; this is the short code.'"
+        },
+        {
+          "findingId": "f-028",
+          "category": "metadata_completeness",
+          "object": "Customer[Country]",
+          "action": "accepted",
+          "description": "Add column description for Customer Country",
+          "before": null,
+          "after": "Add description: 'Full country name where the customer resides. Use for country-level geographic grouping and filtering.'"
+        },
+        {
+          "findingId": "f-029",
+          "category": "metadata_completeness",
+          "object": "Customer[Continent]",
+          "action": "accepted",
+          "description": "Add column description for Continent",
+          "before": null,
+          "after": "Add description: 'Continent where the customer is located. Highest level of geographic hierarchy for regional analysis.'"
+        },
+        {
+          "findingId": "f-030",
+          "category": "metadata_completeness",
+          "object": "Customer[Birthday]",
+          "action": "accepted",
+          "description": "Add column description for Birthday",
+          "before": null,
+          "after": "Add description: 'Customer date of birth. Use for age-based segmentation and demographic analysis.'"
+        },
+        {
+          "findingId": "f-031",
+          "category": "metadata_completeness",
+          "object": "Customer[Age]",
+          "action": "accepted",
+          "description": "Add column description for Age",
+          "before": null,
+          "after": "Add description: 'Customer age in years (calculated from Birthday). Use for demographic segmentation. Do not aggregate with SUM.'"
+        },
+        {
+          "findingId": "f-032",
+          "category": "metadata_completeness",
+          "object": "Date[Date]",
+          "action": "accepted",
+          "description": "Add column description for Date",
+          "before": null,
+          "after": "Add description: 'Calendar date value (date-type column). Primary key of the Date table. Used for date-based relationships and filtering.'"
+        },
+        {
+          "findingId": "f-033",
+          "category": "metadata_completeness",
+          "object": "Date[Year]",
+          "action": "accepted",
+          "description": "Add column description for Year",
+          "before": null,
+          "after": "Add description: 'Calendar year (e.g. 2015). Top level of date hierarchy. Do not aggregate with SUM.'"
+        },
+        {
+          "findingId": "f-034",
+          "category": "metadata_completeness",
+          "object": "Date[Year Quarter]",
+          "action": "accepted",
+          "description": "Add column description for Year Quarter",
+          "before": null,
+          "after": "Add description: 'Combined year and quarter label (e.g. \"Q1-2015\"). Use for quarterly trend analysis.'"
+        },
+        {
+          "findingId": "f-035",
+          "category": "metadata_completeness",
+          "object": "Date[Year Quarter Number]",
+          "action": "accepted",
+          "description": "Add column description for Year Quarter Number",
+          "before": null,
+          "after": "Add description: 'Numeric sort key for Year Quarter. Used as Sort By Column for Year Quarter text field. Do not display directly.'"
+        },
+        {
+          "findingId": "f-036",
+          "category": "metadata_completeness",
+          "object": "Date[Quarter]",
+          "action": "accepted",
+          "description": "Add column description for Quarter",
+          "before": null,
+          "after": "Add description: 'Calendar quarter label (Q1, Q2, Q3, Q4). Use for quarterly grouping within a year.'"
+        },
+        {
+          "findingId": "f-037",
+          "category": "metadata_completeness",
+          "object": "Date[Year Month]",
+          "action": "accepted",
+          "description": "Add column description for Year Month",
+          "before": null,
+          "after": "Add description: 'Combined year and full month name (e.g. \"January 2015\"). Use for monthly trend analysis.'"
+        },
+        {
+          "findingId": "f-038",
+          "category": "metadata_completeness",
+          "object": "Date[Year Month Short]",
+          "action": "accepted",
+          "description": "Add column description for Year Month Short",
+          "before": null,
+          "after": "Add description: 'Abbreviated year-month label (e.g. \"Jan 2015\"). Short form for compact visualizations.'"
+        },
+        {
+          "findingId": "f-039",
+          "category": "metadata_completeness",
+          "object": "Date[Year Month Number]",
+          "action": "accepted",
+          "description": "Add column description for Year Month Number",
+          "before": null,
+          "after": "Add description: 'Numeric sort key for Year Month columns. Used as Sort By Column. Do not display directly.'"
+        },
+        {
+          "findingId": "f-040",
+          "category": "metadata_completeness",
+          "object": "Date[Month]",
+          "action": "accepted",
+          "description": "Add column description for Month",
+          "before": null,
+          "after": "Add description: 'Full month name (e.g. \"January\"). Use for monthly grouping. Sorted by Month Number.'"
+        },
+        {
+          "findingId": "f-041",
+          "category": "metadata_completeness",
+          "object": "Date[Month Short]",
+          "action": "accepted",
+          "description": "Add column description for Month Short",
+          "before": null,
+          "after": "Add description: 'Abbreviated month name (e.g. \"Jan\"). Use for compact monthly displays. Sorted by Month Number.'"
+        },
+        {
+          "findingId": "f-042",
+          "category": "metadata_completeness",
+          "object": "Date[Month Number]",
+          "action": "accepted",
+          "description": "Add column description for Month Number",
+          "before": null,
+          "after": "Add description: 'Numeric month (1-12). Sort key for Month and Month Short columns. Do not aggregate with SUM.'"
+        },
+        {
+          "findingId": "f-043",
+          "category": "metadata_completeness",
+          "object": "Date[Day of Week]",
+          "action": "accepted",
+          "description": "Add column description for Day of Week",
+          "before": null,
+          "after": "Add description: 'Full day-of-week name (e.g. \"Monday\"). Use for day-level patterns. Sorted by Day of Week Number.'"
+        },
+        {
+          "findingId": "f-044",
+          "category": "metadata_completeness",
+          "object": "Date[Day of Week Short]",
+          "action": "accepted",
+          "description": "Add column description for Day of Week Short",
+          "before": null,
+          "after": "Add description: 'Abbreviated day name (e.g. \"Mon\"). Compact display for day-of-week analysis. Sorted by Day of Week Number.'"
+        },
+        {
+          "findingId": "f-045",
+          "category": "metadata_completeness",
+          "object": "Date[Day of Week Number]",
+          "action": "accepted",
+          "description": "Add column description for Day of Week Number",
+          "before": null,
+          "after": "Add description: 'Numeric day of week (1=Monday through 7=Sunday). Sort key for day-of-week text columns. Do not aggregate.'"
+        },
+        {
+          "findingId": "f-046",
+          "category": "metadata_completeness",
+          "object": "Date[Working Day]",
+          "action": "accepted",
+          "description": "Add column description for Working Day",
+          "before": null,
+          "after": "Add description: 'Indicates whether the date is a working day (weekday). Use for business-day filtering and analysis.'"
+        },
+        {
+          "findingId": "f-047",
+          "category": "metadata_completeness",
+          "object": "Date[Working Day Number]",
+          "action": "accepted",
+          "description": "Add column description for Working Day Number",
+          "before": null,
+          "after": "Add description: 'Numeric indicator for working day status. Sort key for Working Day column. Do not aggregate.'"
+        },
+        {
+          "findingId": "f-048",
+          "category": "metadata_completeness",
+          "object": "Fact - Sales[Order Number]",
+          "action": "accepted",
+          "description": "Add column description for Order Number",
+          "before": null,
+          "after": "Add description: 'Unique order identifier. Degenerate dimension for order-level analysis. Do not aggregate with SUM.'"
+        },
+        {
+          "findingId": "f-049",
+          "category": "metadata_completeness",
+          "object": "Fact - Sales[Line Number]",
+          "action": "accepted",
+          "description": "Add column description for Line Number",
+          "before": null,
+          "after": "Add description: 'Order line item number within an order. Combined with Order Number forms the table grain. Do not aggregate.'"
+        },
+        {
+          "findingId": "f-050",
+          "category": "metadata_completeness",
+          "object": "Fact - Sales[Order Date]",
+          "action": "accepted",
+          "description": "Add column description for Order Date",
+          "before": null,
+          "after": "Add description: 'Date the order was placed. Primary date for sales analysis. Should be related to Date table.'"
+        },
+        {
+          "findingId": "f-051",
+          "category": "metadata_completeness",
+          "object": "Fact - Sales[Delivery Date]",
+          "action": "accepted",
+          "description": "Add column description for Delivery Date",
+          "before": null,
+          "after": "Add description: 'Date the order was delivered to the customer. Use with USERELATIONSHIP for delivery-based analysis.'"
+        },
+        {
+          "findingId": "f-052",
+          "category": "metadata_completeness",
+          "object": "Fact - Sales[CustomerKey]",
+          "action": "accepted",
+          "description": "Add column description for CustomerKey in Fact - Sales",
+          "before": null,
+          "after": "Add description: 'Foreign key to Customer dimension. Links each sale to its customer. Not for direct analysis.'"
+        },
+        {
+          "findingId": "f-053",
+          "category": "metadata_completeness",
+          "object": "Fact - Sales[StoreKey]",
+          "action": "accepted",
+          "description": "Add column description for StoreKey in Fact - Sales",
+          "before": null,
+          "after": "Add description: 'Foreign key to Store dimension. Links each sale to the store where it occurred. Not for direct analysis.'"
+        },
+        {
+          "findingId": "f-054",
+          "category": "metadata_completeness",
+          "object": "Fact - Sales[ProductKey]",
+          "action": "accepted",
+          "description": "Add column description for ProductKey in Fact - Sales",
+          "before": null,
+          "after": "Add description: 'Foreign key to Product dimension. Links each sale to the product sold. Not for direct analysis.'"
+        },
+        {
+          "findingId": "f-055",
+          "category": "metadata_completeness",
+          "object": "Fact - Sales[Quantity]",
+          "action": "accepted",
+          "description": "Add column description for Quantity",
+          "before": null,
+          "after": "Add description: 'Number of units sold on this line item. Use in measures (e.g. SUMX with price) rather than default aggregation.'"
+        },
+        {
+          "findingId": "f-056",
+          "category": "metadata_completeness",
+          "object": "Fact - Sales[Unit Price]",
+          "action": "accepted",
+          "description": "Add column description for Unit Price in Fact - Sales",
+          "before": null,
+          "after": "Add description: 'Selling price per unit at the time of the transaction. May differ from Product list price due to discounts.'"
+        },
+        {
+          "findingId": "f-057",
+          "category": "metadata_completeness",
+          "object": "Fact - Sales[Net Price]",
+          "action": "accepted",
+          "description": "Add column description for Net Price",
+          "before": null,
+          "after": "Add description: 'Net selling price per unit after discounts and adjustments. Used for revenue calculations in DAX measures.'"
+        },
+        {
+          "findingId": "f-058",
+          "category": "metadata_completeness",
+          "object": "Fact - Sales[Unit Cost]",
+          "action": "accepted",
+          "description": "Add column description for Unit Cost in Fact - Sales",
+          "before": null,
+          "after": "Add description: 'Cost per unit at the time of the transaction. Used in Total Cost and margin measures.'"
+        },
+        {
+          "findingId": "f-059",
+          "category": "metadata_completeness",
+          "object": "Fact - Sales[Currency Code]",
+          "action": "accepted",
+          "description": "Add column description for Currency Code",
+          "before": null,
+          "after": "Add description: 'ISO currency code for the transaction (e.g. USD, EUR). Degenerate dimension for multi-currency analysis.'"
+        },
+        {
+          "findingId": "f-060",
+          "category": "metadata_completeness",
+          "object": "Fact - Sales[Exchange Rate]",
+          "action": "accepted",
+          "description": "Add column description for Exchange Rate",
+          "before": null,
+          "after": "Add description: 'Currency exchange rate at the time of transaction. Used to convert local currency amounts to base currency.'"
+        },
+        {
+          "findingId": "f-061",
+          "category": "metadata_completeness",
+          "object": "Product[ProductKey]",
+          "action": "accepted",
+          "description": "Add column description for ProductKey",
+          "before": null,
+          "after": "Add description: 'Surrogate key uniquely identifying each product. Used for relationships to Fact - Sales. Not for end-user analysis.'"
+        },
+        {
+          "findingId": "f-062",
+          "category": "metadata_completeness",
+          "object": "Product[Product Code]",
+          "action": "accepted",
+          "description": "Add column description for Product Code",
+          "before": null,
+          "after": "Add description: 'Business identifier code for the product (SKU). Use Product Name for display; this is the internal code.'"
+        },
+        {
+          "findingId": "f-063",
+          "category": "metadata_completeness",
+          "object": "Product[Product Name]",
+          "action": "accepted",
+          "description": "Add column description for Product Name",
+          "before": null,
+          "after": "Add description: 'Display name of the product. Primary identifier for product-level analysis and reporting.'"
+        },
+        {
+          "findingId": "f-064",
+          "category": "metadata_completeness",
+          "object": "Product[Manufacturer]",
+          "action": "accepted",
+          "description": "Add column description for Manufacturer",
+          "before": null,
+          "after": "Add description: 'Name of the product manufacturer. Use for manufacturer-level grouping and analysis.'"
+        },
+        {
+          "findingId": "f-065",
+          "category": "metadata_completeness",
+          "object": "Product[Brand]",
+          "action": "accepted",
+          "description": "Add column description for Brand",
+          "before": null,
+          "after": "Add description: 'Product brand name. Use for brand-level analysis and filtering.'"
+        },
+        {
+          "findingId": "f-066",
+          "category": "metadata_completeness",
+          "object": "Product[Color]",
+          "action": "accepted",
+          "description": "Add column description for Color",
+          "before": null,
+          "after": "Add description: 'Product color attribute. Use for product attribute filtering and visual segmentation.'"
+        },
+        {
+          "findingId": "f-067",
+          "category": "metadata_completeness",
+          "object": "Product[Weight Unit Measure]",
+          "action": "accepted",
+          "description": "Add column description for Weight Unit Measure",
+          "before": null,
+          "after": "Add description: 'Unit of measure for the Weight column (e.g. lbs, kg). Interpret Weight values in context of this unit.'"
+        },
+        {
+          "findingId": "f-068",
+          "category": "metadata_completeness",
+          "object": "Product[Weight]",
+          "action": "accepted",
+          "description": "Add column description for Weight",
+          "before": null,
+          "after": "Add description: 'Physical weight of the product in the unit specified by Weight Unit Measure. Relevant for big & bulky logistics.'"
+        },
+        {
+          "findingId": "f-069",
+          "category": "metadata_completeness",
+          "object": "Product[Unit Cost]",
+          "action": "accepted",
+          "description": "Add column description for Unit Cost in Product table",
+          "before": null,
+          "after": "Add description: 'Standard cost per unit from the product catalog. May differ from transaction-level unit cost in Fact - Sales.'"
+        },
+        {
+          "findingId": "f-070",
+          "category": "metadata_completeness",
+          "object": "Product[Unit Price]",
+          "action": "accepted",
+          "description": "Add column description for Unit Price in Product table",
+          "before": null,
+          "after": "Add description: 'List price per unit from the product catalog. May differ from transaction-level unit price in Fact - Sales.'"
+        },
+        {
+          "findingId": "f-071",
+          "category": "metadata_completeness",
+          "object": "Product[Subcategory Code]",
+          "action": "accepted",
+          "description": "Add column description for Subcategory Code",
+          "before": null,
+          "after": "Add description: 'Internal code for the product subcategory. Use Subcategory column for display; this is the lookup code.'"
+        },
+        {
+          "findingId": "f-072",
+          "category": "metadata_completeness",
+          "object": "Product[Subcategory]",
+          "action": "accepted",
+          "description": "Add column description for Subcategory",
+          "before": null,
+          "after": "Add description: 'Product subcategory name. Mid-level of the product hierarchy (Category > Subcategory > Product).'"
+        },
+        {
+          "findingId": "f-073",
+          "category": "metadata_completeness",
+          "object": "Product[Category Code]",
+          "action": "accepted",
+          "description": "Add column description for Category Code",
+          "before": null,
+          "after": "Add description: 'Internal code for the product category. Use Category column for display; this is the lookup code.'"
+        },
+        {
+          "findingId": "f-074",
+          "category": "metadata_completeness",
+          "object": "Product[Category]",
+          "action": "accepted",
+          "description": "Add column description for Category",
+          "before": null,
+          "after": "Add description: 'Top-level product category name. Highest level of product hierarchy for broad analysis.'"
+        },
+        {
+          "findingId": "f-075",
+          "category": "metadata_completeness",
+          "object": "Store[StoreKey]",
+          "action": "accepted",
+          "description": "Add column description for StoreKey",
+          "before": null,
+          "after": "Add description: 'Surrogate key uniquely identifying each store. Used for relationships to Fact - Sales. Not for end-user analysis.'"
+        },
+        {
+          "findingId": "f-076",
+          "category": "metadata_completeness",
+          "object": "Store[Store Code]",
+          "action": "accepted",
+          "description": "Add column description for Store Code",
+          "before": null,
+          "after": "Add description: 'Business identifier code for the store. Use Store Name for display; this is the internal reference code.'"
+        },
+        {
+          "findingId": "f-077",
+          "category": "metadata_completeness",
+          "object": "Store[Country]",
+          "action": "accepted",
+          "description": "Add column description for Store Country",
+          "before": null,
+          "after": "Add description: 'Country where the store is located. Use for geographic grouping of store performance.'"
+        },
+        {
+          "findingId": "f-078",
+          "category": "metadata_completeness",
+          "object": "Store[State]",
+          "action": "accepted",
+          "description": "Add column description for Store State",
+          "before": null,
+          "after": "Add description: 'State or province where the store is located. Use for regional store performance analysis.'"
+        },
+        {
+          "findingId": "f-079",
+          "category": "metadata_completeness",
+          "object": "Store[Name]",
+          "action": "accepted",
+          "description": "Add column description for Store Name",
+          "before": null,
+          "after": "Add description: 'Display name of the store location. Primary identifier for store-level analysis and reporting.'"
+        },
+        {
+          "findingId": "f-080",
+          "category": "metadata_completeness",
+          "object": "Store[Square Meters]",
+          "action": "accepted",
+          "description": "Add column description for Square Meters",
+          "before": null,
+          "after": "Add description: 'Physical floor area of the store in square meters. Use for store size analysis and revenue-per-sqm calculations.'"
+        },
+        {
+          "findingId": "f-081",
+          "category": "metadata_completeness",
+          "object": "Store[Open Date]",
+          "action": "accepted",
+          "description": "Add column description for Open Date",
+          "before": null,
+          "after": "Add description: 'Date when the store opened for business. Use for store age analysis and new store tracking.'"
+        },
+        {
+          "findingId": "f-082",
+          "category": "metadata_completeness",
+          "object": "Store[Close Date]",
+          "action": "accepted",
+          "description": "Add column description for Close Date",
+          "before": null,
+          "after": "Add description: 'Date when the store closed (null if still open). Use with Status column to filter active vs closed stores.'"
+        },
+        {
+          "findingId": "f-083",
+          "category": "metadata_completeness",
+          "object": "Store[Status]",
+          "action": "accepted",
+          "description": "Add column description for Status",
+          "before": null,
+          "after": "Add description: 'Current operational status of the store (e.g. Open, Closed). Use to filter for active stores in analysis.'"
+        },
+        {
+          "findingId": "f-084",
+          "category": "metadata_completeness",
+          "object": "\u2375 Big & Bulky Measures[Gross Margin]",
+          "action": "accepted",
+          "description": "Add measure description for Gross Margin",
+          "before": null,
+          "after": "Add description: 'Gross Margin = Total Revenue minus Total Cost. Measures profitability before operating expenses. Currency value (not percentage). Formula: [Total Revenue] - [Total Cost].'"
+        },
+        {
+          "findingId": "f-085",
+          "category": "metadata_completeness",
+          "object": "\u2375 Big & Bulky Measures[Total Revenue]",
+          "action": "accepted",
+          "description": "Add measure description for Total Revenue",
+          "before": null,
+          "after": "Add description: 'Total Revenue = sum of (Quantity * Net Price) across all sales transactions. Primary top-line monetary metric. Formula: SUMX(Fact - Sales, Quantity * Net Price).'"
+        },
+        {
+          "findingId": "f-086",
+          "category": "metadata_completeness",
+          "object": "\u2375 Big & Bulky Measures[Total Cost]",
+          "action": "accepted",
+          "description": "Add measure description for Total Cost",
+          "before": null,
+          "after": "Add description: 'Total Cost = sum of (Quantity * Unit Cost) across all sales transactions. Use for cost analysis and margin calculations. Formula: SUMX(Fact - Sales, Quantity * Unit Cost).'"
+        },
+        {
+          "findingId": "f-087",
+          "category": "metadata_completeness",
+          "object": "\u2375 Big & Bulky Measures[Total Sales]",
+          "action": "accepted",
+          "description": "Add measure description for Total Sales",
+          "before": null,
+          "after": "Add description: 'Total Sales = count of order line items. Measures transaction volume, not monetary value. Formula: COUNT(Fact - Sales[Order Number]).'"
+        },
+        {
+          "findingId": "f-088",
+          "category": "metadata_completeness",
+          "object": "Multiple columns",
+          "action": "accepted",
+          "description": "Add synonyms to key business columns to improve Copilot natural language matching",
+          "before": null,
+          "after": "Add synonyms: Customer[Name] -> 'customer name, buyer, purchaser'; Product[Category] -> 'product category, type, group'; Store[Name] -> 'store name, location, shop'; Product[Brand] -> 'brand name, make'"
+        },
+        {
+          "findingId": "f-089",
+          "category": "metadata_completeness",
+          "object": "Geography columns",
+          "action": "accepted",
+          "description": "Set Data Category on geography columns for Copilot and map visual support",
+          "before": null,
+          "after": "Set Data Category: Customer[City] -> City, Customer[State] -> StateOrProvince, Customer[Zip Code] -> PostalCode, Customer[Country] -> Country, Customer[Continent] -> Continent; apply same to Store geography columns"
+        },
+        {
+          "findingId": "f-090",
+          "category": "data_types_aggregation",
+          "object": "Fact - Sales[Exchange Rate]",
+          "action": "deferred",
+          "description": "Evaluate whether Exchange Rate should use Decimal instead of Float data type",
+          "reason": "Needs evaluation -- Exchange Rate may be acceptable as float"
+        },
+        {
+          "findingId": "f-091",
+          "category": "data_types_aggregation",
+          "object": "Product[Weight]",
+          "action": "deferred",
+          "description": "Evaluate whether Weight should use Decimal instead of Float data type",
+          "reason": "Needs evaluation -- Weight may be acceptable as float"
+        },
+        {
+          "findingId": "f-092",
+          "category": "data_types_aggregation",
+          "object": "Multiple ID/Year/Code columns",
+          "action": "accepted",
+          "description": "Set default summarization to 'Don't Summarize' on ID, key, code, year, and number columns",
+          "before": null,
+          "after": "Set SummarizeBy = None on: Year, Month Number, CustomerKey, ProductKey, StoreKey, Order Number, Line Number, Age, Store Code, Subcategory Code, Category Code, Day of Week Number, Year Quarter Number, Year Month Number, Working Day Number"
+        },
+        {
+          "findingId": "f-093",
+          "category": "data_types_aggregation",
+          "object": "Date table text columns",
+          "action": "accepted",
+          "description": "Configure Sort By Column for Date table text columns to enable chronological sorting",
+          "before": null,
+          "after": "Set Sort By Column: Month -> Month Number, Month Short -> Month Number, Day of Week -> Day of Week Number, Day of Week Short -> Day of Week Number, Year Month -> Year Month Number, Year Month Short -> Year Month Number, Quarter -> Year Quarter Number"
+        },
+        {
+          "findingId": "f-094",
+          "category": "relationships",
+          "object": "Fact - Sales[Order Date] -> Date[Date]",
+          "action": "accepted",
+          "description": "Create missing relationship between Order Date and Date table; set as active relationship",
+          "before": null,
+          "after": "Create relationship: Fact - Sales[Order Date] -> Date[Date] (many-to-one, active). Set existing Delivery Date relationship to inactive. Use USERELATIONSHIP for delivery date measures."
+        },
+        {
+          "findingId": "f-095",
+          "category": "relationships",
+          "object": "Date",
+          "action": "accepted",
+          "description": "Mark the Date table as a date table and disable auto-generated date tables",
+          "before": null,
+          "after": "Mark Date table as date table using Date[Date] column. Set __PBI_TimeIntelligenceEnabled = 1. Disable auto date/time in model settings."
+        },
+        {
+          "findingId": "f-096",
+          "category": "measures_calculations",
+          "object": "\u2375 Big & Bulky Measures[Total Cost]",
+          "action": "accepted",
+          "description": "Fix Total Cost measure to multiply unit cost by quantity instead of just summing unit cost",
+          "before": null,
+          "after": "Change formula to: SUMX('Fact - Sales', 'Fact - Sales'[Unit Cost] * 'Fact - Sales'[Quantity])"
+        },
+        {
+          "findingId": "f-097",
+          "category": "measures_calculations",
+          "object": "\u2375 Big & Bulky Measures[Total Sales]",
+          "action": "accepted",
+          "description": "Rename 'Total Sales' to 'Order Line Count' to accurately reflect that it counts order lines, not monetary value",
+          "before": null,
+          "after": "Rename measure to 'Order Line Count' (or 'Transaction Count'). Formula remains COUNT('Fact - Sales'[Order Number])."
+        },
+        {
+          "findingId": "f-098",
+          "category": "measures_calculations",
+          "object": "\u2375 Big & Bulky Measures[Gross Margin]",
+          "action": "deferred",
+          "description": "Verify Gross Margin calculation after fixing Total Cost dependency",
+          "reason": "Fix Total Cost measure (f-096) first, then verify Gross Margin"
+        },
+        {
+          "findingId": "f-099",
+          "category": "measures_calculations",
+          "object": "Model",
+          "action": "accepted",
+          "description": "Create time intelligence measures for YTD, prior year, and year-over-year comparisons",
+          "before": null,
+          "after": "Create measures: YTD Revenue (TOTALYTD), Previous Year Revenue (CALCULATE + SAMEPERIODLASTYEAR), YoY Revenue Growth % ((Current - Prior) / Prior)"
+        },
+        {
+          "findingId": "f-100",
+          "category": "measures_calculations",
+          "object": "\u2375 Big & Bulky Measures[Gross Margin]",
+          "action": "accepted",
+          "description": "Fully qualify measure references in Gross Margin formula per DAX standards",
+          "before": null,
+          "after": "Change formula to: '\u2375 Big & Bulky Measures'[Total Revenue] - '\u2375 Big & Bulky Measures'[Total Cost]"
+        },
+        {
+          "findingId": "f-101",
+          "category": "measures_calculations",
+          "object": "Model",
+          "action": "accepted",
+          "description": "Add additional common business measures to improve Copilot coverage",
+          "before": null,
+          "after": "Create measures: Average Order Value, Distinct Customer Count, Quantity Sold, Revenue per Store, Revenue per Product Category"
+        },
+        {
+          "findingId": "f-102",
+          "category": "measures_calculations",
+          "object": "Total Sales vs Total Revenue",
+          "action": "accepted",
+          "description": "Rename 'Total Sales' to distinguish it from the monetary 'Total Revenue' measure",
+          "before": null,
+          "after": "Rename 'Total Sales' to 'Order Line Count' to clearly indicate it counts transactions, not monetary totals"
+        },
+        {
+          "findingId": "f-103",
+          "category": "ai_preparation",
+          "object": "Model",
+          "action": "accepted",
+          "description": "Configure AI schema (Copilot/schema.json) to control field visibility for Copilot",
+          "before": null,
+          "after": "Create Copilot/schema.json: hide key columns, code columns, sort-helper number columns, and intermediate fields from AI visibility"
+        },
+        {
+          "findingId": "f-104",
+          "category": "ai_preparation",
+          "object": "Model",
+          "action": "accepted",
+          "description": "Create AI instructions file with business context for Copilot DAX generation",
+          "before": null,
+          "after": "Create Copilot/Instructions/instructions.md with: (1) Big & Bulky Co business context, (2) key metric definitions, (3) default time periods, (4) business terminology, (5) preferred grouping dimensions"
+        },
+        {
+          "findingId": "f-105",
+          "category": "ai_preparation",
+          "object": "Model",
+          "action": "accepted",
+          "description": "Create verified answers for common business questions to improve Copilot reliability",
+          "before": null,
+          "after": "Create verified answers for: 'What is total revenue?', 'Show sales by product category', 'What are the top 10 customers?' -- each with 5-7 trigger phrase variations"
+        },
+        {
+          "findingId": "f-106",
+          "category": "ai_preparation",
+          "object": "Model",
+          "action": "accepted",
+          "description": "Enable the 'Prepped for AI' flag on the model after completing all AI preparation",
+          "before": null,
+          "after": "Enable 'Prepped for AI' flag in Power BI Desktop model settings"
+        },
+        {
+          "findingId": "f-107",
+          "category": "ai_preparation",
+          "object": "Multiple key/code/number columns",
+          "action": "accepted",
+          "description": "Exclude noise fields (18 key/code/number columns) from AI schema visibility",
+          "before": null,
+          "after": "Exclude from AI schema: CustomerKey, ProductKey, StoreKey, Country Code, State Code, Product Code, Subcategory Code, Category Code, Store Code, Line Number, Month Number, Day of Week Number, Year Quarter Number, Year Month Number, Working Day Number, and remaining sort-helper columns"
+        },
+        {
+          "findingId": "f-108",
+          "category": "security",
+          "object": "Model",
+          "action": "accepted",
+          "description": "Define Row-Level Security roles per organizational standards (minimum Admin and General)",
+          "before": null,
+          "after": "Create RLS roles: Admin (no filters, full access) and General (with appropriate row-level filters). Assign via AAD groups."
+        },
+        {
+          "findingId": "f-109",
+          "category": "data_consistency",
+          "object": "Date",
+          "action": "accepted",
+          "description": "Remove restrictive Q1-2015 filter on Date table to cover full sales date range",
+          "before": null,
+          "after": "Remove 'Filtered Rows' step (Table.SelectRows filtering to Q1-2015) from Date table Power Query. Date table should span the full range of dates across all fact tables."
+        }
+      ]
+    }
+  ]
+}

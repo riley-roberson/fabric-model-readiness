@@ -19,6 +19,10 @@ app/dist-electron/
 app/dist-frontend/
 app/release/
 
+# GitHub Pages prototype
+docs/node_modules/
+docs/dist/
+
 # Tool binaries (download separately, see README)
 tools/powerbi-modeling-mcp/extracted/
 tools/pbi-tools/
@@ -34,6 +38,7 @@ nul
 .obsidian/
 Fundamentals of Software Engineering.md
 Implementation Guide.md
+Intro to Software Tests.md
 
 # OS
 Thumbs.db

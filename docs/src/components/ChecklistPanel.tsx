@@ -43,7 +43,7 @@ export function ChecklistPanel({ findings, checklist }: ChecklistPanelProps) {
             type="checkbox"
             checked={hideAddressed}
             onChange={(e) => setHideAddressed(e.target.checked)}
-            className="w-3 h-3 rounded border-slate-600 bg-slate-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
+            className="w-3 h-3 rounded border-slate-600 bg-slate-800 text-brand-emerald focus:ring-brand-emerald focus:ring-offset-0 cursor-pointer"
           />
           <span className="text-xs text-slate-500">Hide addressed items</span>
         </label>

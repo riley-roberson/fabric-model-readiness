@@ -41,7 +41,7 @@ export function FindingCard({ finding }: FindingCardProps) {
         </div>
 
         {finding.auto_fixable && (
-          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-500/15 text-blue-400 border border-blue-500/20 flex-shrink-0">
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-brand-berry/15 text-brand-berry border border-brand-berry/20 flex-shrink-0">
             FIX
           </span>
         )}

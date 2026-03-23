@@ -22,7 +22,7 @@
            active:scale-[0.97] cursor-pointer inline-flex items-center justify-center gap-1.5;
   }
   .btn-primary {
-    @apply btn bg-blue-600 text-white hover:bg-blue-500 focus:ring-blue-500;
+    @apply btn bg-brand-emerald text-white hover:bg-brand-emerald-light focus:ring-brand-emerald;
   }
   .btn-ghost {
     @apply btn bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white focus:ring-slate-500 border border-slate-700;

@@ -33,7 +33,7 @@ export function FindingsPanel({ findings }: FindingsPanelProps) {
         <p className="text-sm text-slate-400">
           <span className="font-bold text-slate-200">{findings.length}</span> findings
           {autoFixableCount > 0 && (
-            <span className="ml-2 text-blue-400">({autoFixableCount} auto-fixable)</span>
+            <span className="ml-2 text-brand-teal">({autoFixableCount} auto-fixable)</span>
           )}
         </p>
       </div>

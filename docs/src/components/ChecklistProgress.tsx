@@ -35,7 +35,7 @@ export function ChecklistProgress({ stats, onClearAll }: ChecklistProgressProps)
 
       <div className="w-full bg-slate-800 rounded-full h-1.5 mb-3 overflow-hidden">
         <div
-          className="h-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all duration-300"
+          className="h-1.5 rounded-full bg-gradient-to-r from-brand-emerald to-brand-teal transition-all duration-300"
           style={{ width: `${stats.percent}%` }}
         />
       </div>

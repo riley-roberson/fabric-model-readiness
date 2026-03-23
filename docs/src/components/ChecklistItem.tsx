@@ -30,7 +30,7 @@ export function ChecklistItem({ finding, checked, onToggle }: ChecklistItemProps
           type="checkbox"
           checked={checked}
           onChange={onToggle}
-          className="w-3.5 h-3.5 rounded border-slate-600 bg-slate-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer flex-shrink-0"
+          className="w-3.5 h-3.5 rounded border-slate-600 bg-slate-800 text-brand-emerald focus:ring-brand-emerald focus:ring-offset-0 cursor-pointer flex-shrink-0"
         />
 
         {/* Main content -- clickable to expand */}
@@ -50,7 +50,7 @@ export function ChecklistItem({ finding, checked, onToggle }: ChecklistItemProps
           </div>
 
           {finding.auto_fixable && (
-            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-500/15 text-blue-400 border border-blue-500/20 flex-shrink-0">
+            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-brand-berry/15 text-brand-berry border border-brand-berry/20 flex-shrink-0">
               FIX
             </span>
           )}

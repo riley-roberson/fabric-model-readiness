@@ -10,7 +10,7 @@ interface ViewToggleProps {
 
 export function ViewToggle({ mode, onModeChange, stats }: ViewToggleProps) {
   return (
-    <div className="flex gap-1 mb-4 p-1 rounded-lg bg-gray-100 border border-gray-200 w-fit">
+    <div className="flex gap-1 mb-4 p-1 rounded-lg bg-gray-200 border border-gray-300 w-fit">
       <button
         className={`btn-tab ${mode === "findings" ? "btn-tab-active" : ""}`}
         onClick={() => onModeChange("findings")}

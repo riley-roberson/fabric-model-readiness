@@ -56,6 +56,6 @@
            transition-colors duration-100 cursor-pointer;
   }
   .btn-tab-active {
-    @apply bg-white text-gray-900 shadow-sm;
+    @apply bg-white text-gray-900 shadow-sm border border-gray-300;
   }
 }

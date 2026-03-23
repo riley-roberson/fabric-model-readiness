@@ -8,11 +8,11 @@ interface FindingsPanelProps {
 }
 
 const SECTION_COLORS: Record<Severity, { border: string; text: string; dot: string }> = {
-  critical: { border: "border-red-500/30", text: "text-red-400", dot: "bg-red-500" },
-  high: { border: "border-orange-500/30", text: "text-orange-400", dot: "bg-orange-500" },
-  medium: { border: "border-amber-500/30", text: "text-amber-400", dot: "bg-amber-500" },
-  low: { border: "border-blue-500/30", text: "text-blue-400", dot: "bg-blue-500" },
-  info: { border: "border-slate-500/30", text: "text-slate-400", dot: "bg-slate-500" },
+  critical: { border: "border-red-200", text: "text-red-600", dot: "bg-red-500" },
+  high: { border: "border-orange-200", text: "text-orange-600", dot: "bg-orange-500" },
+  medium: { border: "border-amber-200", text: "text-amber-600", dot: "bg-amber-500" },
+  low: { border: "border-blue-200", text: "text-blue-600", dot: "bg-blue-500" },
+  info: { border: "border-gray-300", text: "text-gray-500", dot: "bg-gray-400" },
 };
 
 export function FindingsPanel({ findings }: FindingsPanelProps) {
@@ -30,8 +30,8 @@ export function FindingsPanel({ findings }: FindingsPanelProps) {
   return (
     <div>
       <div className="card px-4 py-3 mb-4 flex items-center justify-between">
-        <p className="text-sm text-slate-400">
-          <span className="font-bold text-slate-200">{findings.length}</span> findings
+        <p className="text-sm text-gray-500">
+          <span className="font-bold text-gray-900">{findings.length}</span> findings
           {autoFixableCount > 0 && (
             <span className="ml-2 text-brand-teal">({autoFixableCount} auto-fixable)</span>
           )}
@@ -47,7 +47,7 @@ export function FindingsPanel({ findings }: FindingsPanelProps) {
             <div className={`flex items-center gap-2 mb-2 pb-1.5 border-b ${colors.border}`}>
               <div className={`w-2 h-2 rounded-full ${colors.dot}`} />
               <h3 className={`text-xs font-bold uppercase tracking-widest ${colors.text}`}>{severity}</h3>
-              <span className="text-xs text-slate-600">({items.length})</span>
+              <span className="text-xs text-gray-400">({items.length})</span>
             </div>
             {items.map((finding) => (
               <FindingCard key={finding.id} finding={finding} />

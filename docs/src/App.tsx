@@ -83,15 +83,15 @@ export function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-brand-navy border-b border-brand-teal/20 px-4 py-3">
+      <header className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <svg width="20" height="20" className="text-brand-emerald" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082" />
             </svg>
-            <span className="text-sm font-bold text-slate-200">Fabric Model Scout</span>
+            <span className="text-sm font-bold text-gray-900">Fabric Model Scout</span>
           </div>
           {state !== "idle" && (
             <button className="btn-ghost text-xs px-3 py-1.5" onClick={handleReset}>
@@ -118,10 +118,10 @@ export function App() {
         {state === "results" && scanResult && (
           <div>
             <div className="mb-4">
-              <h2 className="text-lg font-bold text-slate-100">
+              <h2 className="text-lg font-bold text-gray-900">
                 {scanResult.model_name}
               </h2>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-gray-500">
                 Format: {scanResult.model_format} &middot; {scanResult.findings.length} findings
               </p>
             </div>
@@ -145,13 +145,13 @@ export function App() {
         {state === "error" && (
           <div className="flex flex-col items-center justify-center min-h-[60vh]">
             <div className="card p-8 max-w-md w-full text-center">
-              <div className="mx-auto w-14 h-14 rounded-xl bg-red-600/10 border border-red-500/20 flex items-center justify-center mb-5">
-                <svg width="28" height="28" className="text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <div className="mx-auto w-14 h-14 rounded-xl bg-red-50 border border-red-200 flex items-center justify-center mb-5">
+                <svg width="28" height="28" className="text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
                 </svg>
               </div>
-              <h2 className="text-lg font-bold text-slate-100 mb-2">Analysis Failed</h2>
-              <p className="text-sm text-slate-400 mb-6 leading-relaxed">{errorMsg}</p>
+              <h2 className="text-lg font-bold text-gray-900 mb-2">Analysis Failed</h2>
+              <p className="text-sm text-gray-500 mb-6 leading-relaxed">{errorMsg}</p>
               <button className="btn-primary text-sm px-6 py-3" onClick={handleReset}>
                 Try Again
               </button>

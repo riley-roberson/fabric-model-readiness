@@ -14,17 +14,17 @@ export function ScanProgress({ modelName, step, percent }: ScanProgressProps) {
           </svg>
         </div>
 
-        <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">Analyzing</p>
-        <p className="text-base font-bold text-slate-200 mb-6 truncate">{modelName}</p>
+        <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Analyzing</p>
+        <p className="text-base font-bold text-gray-900 mb-6 truncate">{modelName}</p>
 
-        <div className="w-full bg-slate-800 rounded-full h-2 mb-3 overflow-hidden">
+        <div className="w-full bg-gray-200 rounded-full h-2 mb-3 overflow-hidden">
           <div
             className="bg-gradient-to-r from-brand-emerald to-brand-teal h-2 rounded-full transition-all duration-300"
             style={{ width: `${percent}%` }}
           />
         </div>
 
-        <p className="text-sm text-slate-400">{step}</p>
+        <p className="text-sm text-gray-500">{step}</p>
       </div>
     </div>
   );

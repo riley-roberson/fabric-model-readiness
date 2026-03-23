@@ -11,11 +11,11 @@ interface ChecklistPanelProps {
 }
 
 const SECTION_COLORS: Record<Severity, { border: string; text: string; dot: string }> = {
-  critical: { border: "border-red-500/30", text: "text-red-400", dot: "bg-red-500" },
-  high: { border: "border-orange-500/30", text: "text-orange-400", dot: "bg-orange-500" },
-  medium: { border: "border-amber-500/30", text: "text-amber-400", dot: "bg-amber-500" },
-  low: { border: "border-blue-500/30", text: "text-blue-400", dot: "bg-blue-500" },
-  info: { border: "border-slate-500/30", text: "text-slate-400", dot: "bg-slate-500" },
+  critical: { border: "border-red-200", text: "text-red-600", dot: "bg-red-500" },
+  high: { border: "border-orange-200", text: "text-orange-600", dot: "bg-orange-500" },
+  medium: { border: "border-amber-200", text: "text-amber-600", dot: "bg-amber-500" },
+  low: { border: "border-blue-200", text: "text-blue-600", dot: "bg-blue-500" },
+  info: { border: "border-gray-300", text: "text-gray-500", dot: "bg-gray-400" },
 };
 
 export function ChecklistPanel({ findings, checklist }: ChecklistPanelProps) {
@@ -43,23 +43,23 @@ export function ChecklistPanel({ findings, checklist }: ChecklistPanelProps) {
             type="checkbox"
             checked={hideAddressed}
             onChange={(e) => setHideAddressed(e.target.checked)}
-            className="w-3 h-3 rounded border-slate-600 bg-slate-800 text-brand-emerald focus:ring-brand-emerald focus:ring-offset-0 cursor-pointer"
+            className="w-3 h-3 rounded border-gray-300 bg-white text-brand-emerald focus:ring-brand-emerald focus:ring-offset-0 cursor-pointer"
           />
-          <span className="text-xs text-slate-500">Hide addressed items</span>
+          <span className="text-xs text-gray-500">Hide addressed items</span>
         </label>
       </div>
 
       {allDone && !hideAddressed && (
         <div className="card p-6 text-center mb-4">
-          <p className="text-sm font-bold text-emerald-400 mb-1">All findings addressed</p>
-          <p className="text-xs text-slate-500">Every item on the checklist has been marked as addressed.</p>
+          <p className="text-sm font-bold text-emerald-600 mb-1">All findings addressed</p>
+          <p className="text-xs text-gray-500">Every item on the checklist has been marked as addressed.</p>
         </div>
       )}
 
       {allDone && hideAddressed && (
         <div className="card p-6 text-center mb-4">
-          <p className="text-sm font-bold text-emerald-400 mb-1">All findings addressed</p>
-          <p className="text-xs text-slate-500">
+          <p className="text-sm font-bold text-emerald-600 mb-1">All findings addressed</p>
+          <p className="text-xs text-gray-500">
             Uncheck "Hide addressed items" to see your completed checklist.
           </p>
         </div>
@@ -78,7 +78,7 @@ export function ChecklistPanel({ findings, checklist }: ChecklistPanelProps) {
             <div className={`flex items-center gap-2 mb-2 pb-1.5 border-b ${colors.border}`}>
               <div className={`w-2 h-2 rounded-full ${colors.dot}`} />
               <h3 className={`text-xs font-bold uppercase tracking-widest ${colors.text}`}>{severity}</h3>
-              <span className="text-xs text-slate-600 tabular-nums">
+              <span className="text-xs text-gray-400 tabular-nums">
                 ({checkedInSev}/{totalInSev})
               </span>
             </div>

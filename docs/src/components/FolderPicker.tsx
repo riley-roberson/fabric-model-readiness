@@ -25,12 +25,12 @@ export function FolderPicker({ onSelect }: FolderPickerProps) {
           </svg>
         </div>
 
-        <h1 className="text-xl font-bold text-slate-100 mb-2">
+        <h1 className="text-xl font-bold text-gray-900 mb-2">
           Fabric Model Scout
         </h1>
-        <p className="text-sm text-slate-400 mb-6 leading-relaxed">
+        <p className="text-sm text-gray-500 mb-6 leading-relaxed">
           Analyze your Power BI semantic model for AI readiness.
-          Select a <code className="px-1.5 py-0.5 rounded bg-slate-800 text-brand-emerald text-xs">.SemanticModel</code> folder to begin.
+          Select a <code className="px-1.5 py-0.5 rounded bg-gray-100 text-brand-emerald text-xs">.SemanticModel</code> folder to begin.
         </p>
 
         {isSupported ? (
@@ -41,16 +41,16 @@ export function FolderPicker({ onSelect }: FolderPickerProps) {
             Select .SemanticModel Folder
           </button>
         ) : (
-          <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
-            <p className="text-sm text-amber-400 font-semibold mb-1">Browser not supported</p>
-            <p className="text-xs text-amber-400/80 leading-relaxed">
+          <div className="p-4 rounded-lg bg-amber-50 border border-amber-200">
+            <p className="text-sm text-amber-700 font-semibold mb-1">Browser not supported</p>
+            <p className="text-xs text-amber-600 leading-relaxed">
               The File System Access API is required.
               Please use <strong>Chrome</strong> or <strong>Edge</strong> on desktop.
             </p>
           </div>
         )}
 
-        <p className="text-xs text-slate-600 mt-4">
+        <p className="text-xs text-gray-400 mt-4">
           All analysis runs locally in your browser. No data is uploaded.
         </p>
       </div>

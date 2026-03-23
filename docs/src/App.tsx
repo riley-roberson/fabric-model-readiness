@@ -3,6 +3,10 @@ import { FolderPicker } from "./components/FolderPicker";
 import { ScanProgress } from "./components/ScanProgress";
 import { ScoreCard } from "./components/ScoreCard";
 import { FindingsPanel } from "./components/FindingsPanel";
+import { ViewToggle } from "./components/ViewToggle";
+import type { ViewMode } from "./components/ViewToggle";
+import { ChecklistPanel } from "./components/ChecklistPanel";
+import { useChecklist } from "./hooks/useChecklist";
 import { parse } from "./scanner/parser";
 import { runAllChecks } from "./scanner/rules";
 import { computeSummary, estimateTotalChecks, rating } from "./scanner/scorer";
@@ -16,6 +20,7 @@ export function App() {
   const [progress, setProgress] = useState({ step: "", percent: 0 });
   const [errorMsg, setErrorMsg] = useState("");
   const [modelName, setModelName] = useState("");
+  const [viewMode, setViewMode] = useState<ViewMode>("findings");
 
   const handleFolderSelect = useCallback(async (dir: FileSystemDirectoryHandle) => {
     setState("scanning");
@@ -63,12 +68,18 @@ export function App() {
     }
   }, []);
 
+  const checklist = useChecklist(
+    scanResult?.findings ?? [],
+    scanResult?.model_name ?? "",
+  );
+
   const handleReset = useCallback(() => {
     setState("idle");
     setScanResult(null);
     setProgress({ step: "", percent: 0 });
     setErrorMsg("");
     setModelName("");
+    setViewMode("findings");
   }, []);
 
   return (
@@ -121,7 +132,13 @@ export function App() {
               summary={scanResult.summary}
             />
 
-            <FindingsPanel findings={scanResult.findings} />
+            <ViewToggle mode={viewMode} onModeChange={setViewMode} stats={checklist.stats} />
+
+            {viewMode === "findings" ? (
+              <FindingsPanel findings={scanResult.findings} />
+            ) : (
+              <ChecklistPanel findings={scanResult.findings} checklist={checklist} />
+            )}
           </div>
         )}
 

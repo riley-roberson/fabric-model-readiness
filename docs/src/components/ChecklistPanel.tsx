@@ -4,6 +4,7 @@ import { SEVERITY_ORDER } from "../scanner/types";
 import type { UseChecklistReturn } from "../hooks/useChecklist";
 import { ChecklistProgress } from "./ChecklistProgress";
 import { ChecklistItem } from "./ChecklistItem";
+import { ChecklistBundle } from "./ChecklistBundle";
 
 interface ChecklistPanelProps {
   findings: Finding[];
@@ -17,6 +18,21 @@ const SECTION_COLORS: Record<Severity, { border: string; text: string; dot: stri
   low: { border: "border-blue-200", text: "text-blue-600", dot: "bg-blue-500" },
   info: { border: "border-gray-300", text: "text-gray-500", dot: "bg-gray-400" },
 };
+
+interface CheckGroup {
+  check: string;
+  findings: Finding[];
+}
+
+function groupByCheck(findings: Finding[]): CheckGroup[] {
+  const map = new Map<string, Finding[]>();
+  for (const f of findings) {
+    const arr = map.get(f.check);
+    if (arr) arr.push(f);
+    else map.set(f.check, [f]);
+  }
+  return Array.from(map.entries()).map(([check, items]) => ({ check, findings: items }));
+}
 
 export function ChecklistPanel({ findings, checklist }: ChecklistPanelProps) {
   const [hideAddressed, setHideAddressed] = useState(false);
@@ -72,6 +88,7 @@ export function ChecklistPanel({ findings, checklist }: ChecklistPanelProps) {
         const sevStats = stats.bySeverity.find((s) => s.severity === severity);
         const checkedInSev = sevStats?.checked ?? 0;
         const totalInSev = sevStats?.total ?? items.length;
+        const bundles = groupByCheck(items);
 
         return (
           <div key={severity} className="mb-4">
@@ -82,14 +99,24 @@ export function ChecklistPanel({ findings, checklist }: ChecklistPanelProps) {
                 ({checkedInSev}/{totalInSev})
               </span>
             </div>
-            {items.map((finding) => (
-              <ChecklistItem
-                key={finding.id}
-                finding={finding}
-                checked={isChecked(finding)}
-                onToggle={() => toggle(finding)}
-              />
-            ))}
+            {bundles.map((group) =>
+              group.findings.length === 1 ? (
+                <ChecklistItem
+                  key={group.findings[0].id}
+                  finding={group.findings[0]}
+                  checked={isChecked(group.findings[0])}
+                  onToggle={() => toggle(group.findings[0])}
+                />
+              ) : (
+                <ChecklistBundle
+                  key={group.check}
+                  check={group.check}
+                  findings={group.findings}
+                  isChecked={isChecked}
+                  onToggle={toggle}
+                />
+              ),
+            )}
           </div>
         );
       })}

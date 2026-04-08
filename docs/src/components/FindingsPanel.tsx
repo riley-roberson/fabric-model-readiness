@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import type { Finding, Severity } from "../scanner/types";
 import { SEVERITY_ORDER } from "../scanner/types";
 import { FindingCard } from "./FindingCard";
+import { FindingBundle } from "./FindingBundle";
 
 interface FindingsPanelProps {
   findings: Finding[];
@@ -14,6 +15,21 @@ const SECTION_COLORS: Record<Severity, { border: string; text: string; dot: stri
   low: { border: "border-blue-200", text: "text-blue-600", dot: "bg-blue-500" },
   info: { border: "border-gray-300", text: "text-gray-500", dot: "bg-gray-400" },
 };
+
+interface CheckGroup {
+  check: string;
+  findings: Finding[];
+}
+
+function groupByCheck(findings: Finding[]): CheckGroup[] {
+  const map = new Map<string, Finding[]>();
+  for (const f of findings) {
+    const arr = map.get(f.check);
+    if (arr) arr.push(f);
+    else map.set(f.check, [f]);
+  }
+  return Array.from(map.entries()).map(([check, items]) => ({ check, findings: items }));
+}
 
 export function FindingsPanel({ findings }: FindingsPanelProps) {
   const grouped = useMemo(() => {
@@ -42,6 +58,7 @@ export function FindingsPanel({ findings }: FindingsPanelProps) {
         const items = grouped[severity];
         if (items.length === 0) return null;
         const colors = SECTION_COLORS[severity];
+        const bundles = groupByCheck(items);
         return (
           <div key={severity} className="mb-4">
             <div className={`flex items-center gap-2 mb-2 pb-1.5 border-b ${colors.border}`}>
@@ -49,9 +66,13 @@ export function FindingsPanel({ findings }: FindingsPanelProps) {
               <h3 className={`text-xs font-bold uppercase tracking-widest ${colors.text}`}>{severity}</h3>
               <span className="text-xs text-gray-400">({items.length})</span>
             </div>
-            {items.map((finding) => (
-              <FindingCard key={finding.id} finding={finding} />
-            ))}
+            {bundles.map((group) =>
+              group.findings.length === 1 ? (
+                <FindingCard key={group.findings[0].id} finding={group.findings[0]} />
+              ) : (
+                <FindingBundle key={group.check} check={group.check} findings={group.findings} />
+              ),
+            )}
           </div>
         );
       })}

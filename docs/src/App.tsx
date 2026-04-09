@@ -6,6 +6,7 @@ import { FindingsPanel } from "./components/FindingsPanel";
 import { ViewToggle } from "./components/ViewToggle";
 import type { ViewMode } from "./components/ViewToggle";
 import { ChecklistPanel } from "./components/ChecklistPanel";
+import { StandardsDrawer } from "./components/StandardsDrawer";
 import { useChecklist } from "./hooks/useChecklist";
 import { parse } from "./scanner/parser";
 import { runAllChecks } from "./scanner/rules";
@@ -21,6 +22,7 @@ export function App() {
   const [errorMsg, setErrorMsg] = useState("");
   const [modelName, setModelName] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("findings");
+  const [standardsOpen, setStandardsOpen] = useState(false);
 
   const handleFolderSelect = useCallback(async (dir: FileSystemDirectoryHandle) => {
     setState("scanning");
@@ -93,13 +95,27 @@ export function App() {
             </svg>
             <span className="text-sm font-bold text-gray-900">Fabric Model Scout</span>
           </div>
-          {state !== "idle" && (
-            <button className="btn-ghost text-xs px-3 py-1.5" onClick={handleReset}>
-              Scan Another
+          <div className="flex items-center gap-2">
+            {state !== "idle" && (
+              <button className="btn-ghost text-xs px-3 py-1.5" onClick={handleReset}>
+                Scan Another
+              </button>
+            )}
+            <button
+              onClick={() => setStandardsOpen(true)}
+              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors"
+              aria-label="Scoring standards"
+              title="Scoring standards"
+            >
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
             </button>
-          )}
+          </div>
         </div>
       </header>
+
+      <StandardsDrawer open={standardsOpen} onClose={() => setStandardsOpen(false)} />
 
       {/* Content */}
       <main className="max-w-3xl mx-auto px-4 py-6">

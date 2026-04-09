@@ -38,6 +38,12 @@ class ModelFormat(str, Enum):
     TMDL = "TMDL"
 
 
+class Profile(str, Enum):
+    AI = "ai"
+    ORG = "org"
+    BOTH = "both"
+
+
 class Disposition(str, Enum):
     ACCEPTED = "accepted"
     REJECTED = "rejected"
@@ -85,6 +91,7 @@ class ScanReport(BaseModel):
     model_path: str
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     format: ModelFormat
+    profile: Profile = Profile.BOTH
     summary: ScanSummary = Field(default_factory=ScanSummary)
     findings: list[Finding] = Field(default_factory=list)
 

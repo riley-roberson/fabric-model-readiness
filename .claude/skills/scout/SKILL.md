@@ -19,6 +19,11 @@ Follow all project rules in CLAUDE.md. You are the Scout agent.
 - A PBIP folder (e.g., `./MyModel.SemanticModel/`)
 - A PBIX file (e.g., `./MyReport.pbix`)
 
+Optionally include `--profile ai|org|both` to filter which checks run:
+- **`ai`** -- Only Microsoft "Prep for AI" checks (descriptions, synonyms, AI schema, instructions, verified answers) plus shared checks (naming, star schema basics).
+- **`org`** -- Only organizational standards checks from `Power BI Standards.md` (display folders, RLS, date tables, DAX patterns) plus shared checks.
+- **`both`** (default) -- All checks. Equivalent to omitting the flag.
+
 If given a PBIX file, extract it to `.scratch/extractions/` as a temp PBIP structure before analysis. Never modify the original PBIX.
 
 ## Steps

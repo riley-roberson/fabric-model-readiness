@@ -7,11 +7,17 @@ Multi-agent system that analyzes Power BI semantic models (PBIP/PBIX) for Micros
 ## Quick Start
 
 ```bash
-# Analyze a PBIP project
+# Analyze a PBIP project (all checks)
 /scout ./MyModel.SemanticModel/
 
 # Analyze a PBIX file (extracts to temp PBIP first)
 /scout ./MyReport.pbix
+
+# Run only Microsoft "Prep for AI" checks
+scout analyze ./MyModel.SemanticModel/ --profile ai
+
+# Run only organizational standards checks
+scout analyze ./MyModel.SemanticModel/ --profile org
 
 # Review proposed changes and record decisions (CLI)
 enforcer review --model "MyModel"
@@ -137,6 +143,18 @@ The Scout produces a 0-100 score. Weights by category:
 | 50-74 | Needs Work (significant gaps) |
 | 0-49 | Not Ready (fundamental issues) |
 
+### Profile-Based Scoring
+
+When `--profile ai` or `--profile org` is active, findings are filtered before scoring. The scorer only sees categories that have findings after filtering, so weights are automatically re-normalized to the active categories. This means the same model may score differently under different profiles.
+
+| Profile | Includes | Excludes |
+|---------|----------|----------|
+| `ai` | Checks tagged `ai` + `both` | Checks tagged `org` |
+| `org` | Checks tagged `org` + `both` | Checks tagged `ai` |
+| `both` | All checks | Nothing |
+
+The check-to-profile mapping is defined in `src/shared/config.py` (`CHECK_PROFILES` dict). "Shared" checks tagged `both` (e.g., naming conventions, star schema basics) run in every profile.
+
 ## Common Pitfalls
 
 ### Description Length Truncation
@@ -194,6 +212,48 @@ reports/                     # Human-readable markdown reports (committed)
     [YYYY-MM-DD]-enforcer-[short-id].md    # Enforcer decisions report
     [YYYY-MM-DD]-history.md                # Cumulative history (overwritten each session)
 ```
+
+## Testing
+
+```bash
+cd fabric-model-readiness
+py -m pip install -e ".[dev]"   # Install with pytest, pytest-cov, ruff
+py -m pytest tests/ -v          # Run all tests
+py -m pytest tests/ --cov=src   # Run with coverage report
+```
+
+### Test Organization
+
+```
+tests/
+  conftest.py                        # Shared make_model() helper
+  test_scout/
+    test_scorer.py                   # Readiness score computation + rating boundaries
+  test_scout_rules/
+    test_ai_prep.py                  # AI schema, instructions, verified answers, noise fields
+    test_data_consistency.py         # Year-partitioned table detection
+    test_data_types.py               # Default summarization, sort-by-column, float types
+    test_measures.py                 # Helper exposure, time intel, duplicates, DAX patterns
+    test_metadata.py                 # Table/column/measure descriptions, data categories
+    test_org_standards.py            # Display folders, RLS roles, date table, USERELATIONSHIP
+    test_relationships.py            # Orphaned tables, inactive/bidir rels, ambiguous paths
+    test_schema_design.py            # Table naming, wide tables, cross-table duplicates
+  test_enforcer/
+    test_dependency.py               # Measure dependency analysis, safe-to-hide checks
+  test_historian/
+    test_drift.py                    # Regression detection across sessions
+    test_logger.py                   # Append-only session recording, file I/O, model listing
+    test_resurface.py                # Deferred item extraction and latest-disposition logic
+  test_api/
+    test_historian_routes.py         # Health endpoint, history API, deferred items, sanitization
+```
+
+### Test Conventions
+
+- Each rule module has positive tests (triggers finding) and negative tests (no finding when correct)
+- Historian and API tests use `tmp_path` + `unittest.mock.patch` for isolated file I/O
+- API tests use `fastapi.testclient.TestClient` (requires `httpx`)
+- Tests must pass before committing: `py -m pytest tests/ -v`
 
 ## Git Workflow
 

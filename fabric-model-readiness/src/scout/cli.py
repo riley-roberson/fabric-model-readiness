@@ -9,9 +9,9 @@ from rich.console import Console
 from rich.table import Table
 
 from scout import parser, report
-from scout.rules import run_all_checks
+from scout.rules import filter_by_profile, run_all_checks
 from scout.scorer import compute_summary, rating
-from shared.model import ScanReport, Severity
+from shared.model import Profile, ScanReport, Severity
 
 app = typer.Typer(help="Scout Agent -- Read-only semantic model analyzer")
 console = Console()
@@ -20,10 +20,21 @@ console = Console()
 @app.command()
 def analyze(
     path: str = typer.Argument(..., help="Path to a .SemanticModel PBIP folder or .pbix file"),
+    profile: str = typer.Option("both", "--profile", "-p", help="Linting profile: ai, org, or both (default)"),
 ) -> None:
     """Analyze a semantic model for Prep for AI best practices."""
+    # Validate profile
+    try:
+        active_profile = Profile(profile.lower())
+    except ValueError:
+        console.print(f"[red]Error:[/red] Invalid profile '{profile}'. Must be ai, org, or both.")
+        raise typer.Exit(code=1)
+
     model_path = Path(path)
-    console.print(f"\nAnalyzing: [bold]{model_path}[/bold]\n")
+    console.print(f"\nAnalyzing: [bold]{model_path}[/bold]")
+    if active_profile != Profile.BOTH:
+        console.print(f"Profile:   [bold]{active_profile.value}[/bold]")
+    console.print()
 
     # Parse
     try:
@@ -36,8 +47,9 @@ def analyze(
     console.print(f"Tables: {len(model.tables)}")
     console.print()
 
-    # Run checks
+    # Run checks and filter by profile
     findings = run_all_checks(model)
+    findings = filter_by_profile(findings, active_profile)
 
     # Compute total checks per category (findings count as checks that failed)
     # For a proper denominator we count total objects checked per category.
@@ -57,6 +69,7 @@ def analyze(
     scan_report = ScanReport(
         model_path=str(model_path),
         format=model.format,
+        profile=active_profile,
         summary=summary,
         findings=findings,
     )

@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from shared.model import Finding, SemanticModel
+from shared.config import CHECK_PROFILES
+from shared.model import Finding, Profile, SemanticModel
 
 from scout.rules import (
     ai_prep,
@@ -33,3 +34,24 @@ def run_all_checks(model: SemanticModel) -> list[Finding]:
     for module in ALL_RULE_MODULES:
         findings.extend(module.check(model))
     return findings
+
+
+def filter_by_profile(findings: list[Finding], profile: Profile) -> list[Finding]:
+    """Keep only findings whose check belongs to the active profile.
+
+    - BOTH: returns all findings unchanged.
+    - AI: keeps checks tagged "ai" or "both".
+    - ORG: keeps checks tagged "org" or "both".
+
+    Unknown checks (not in CHECK_PROFILES) default to "both" so they are
+    always included.
+    """
+    if profile == Profile.BOTH:
+        return findings
+
+    if profile == Profile.AI:
+        allowed = {"ai", "both"}
+    else:
+        allowed = {"org", "both"}
+
+    return [f for f in findings if CHECK_PROFILES.get(f.check, "both") in allowed]

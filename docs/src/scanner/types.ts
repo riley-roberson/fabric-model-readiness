@@ -18,6 +18,8 @@ export type Category =
 
 export type ModelFormat = "TMSL" | "TMDL";
 
+export type Profile = "ai" | "org" | "both";
+
 export type ObjectType =
   | "table"
   | "column"
@@ -126,6 +128,7 @@ export interface ScanResult {
   scan_id: string;
   model_name: string;
   model_format: ModelFormat;
+  profile: Profile;
   score: number;
   rating: string;
   summary: ScanSummary;

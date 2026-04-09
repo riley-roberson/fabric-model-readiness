@@ -9,9 +9,9 @@ import { ChecklistPanel } from "./components/ChecklistPanel";
 import { StandardsDrawer } from "./components/StandardsDrawer";
 import { useChecklist } from "./hooks/useChecklist";
 import { parse } from "./scanner/parser";
-import { runAllChecks } from "./scanner/rules";
+import { filterByProfile, runAllChecks } from "./scanner/rules";
 import { computeSummary, estimateTotalChecks, rating } from "./scanner/scorer";
-import type { ScanResult } from "./scanner/types";
+import type { Profile, ScanResult } from "./scanner/types";
 
 type AppState = "idle" | "scanning" | "results" | "error";
 
@@ -23,6 +23,7 @@ export function App() {
   const [modelName, setModelName] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("findings");
   const [standardsOpen, setStandardsOpen] = useState(false);
+  const [profile, setProfile] = useState<Profile>("both");
 
   const handleFolderSelect = useCallback(async (dir: FileSystemDirectoryHandle) => {
     setState("scanning");
@@ -40,10 +41,13 @@ export function App() {
 
       // Step 2: Run rules
       setProgress({ step: "Running checks...", percent: 30 });
-      const findings = runAllChecks(model, ({ current, total, module }) => {
+      const allFindings = runAllChecks(model, ({ current, total, module }) => {
         const pct = 30 + Math.round((current / total) * 60);
         setProgress({ step: `Checking: ${module}`, percent: pct });
       });
+
+      // Step 2b: Filter by profile
+      const findings = filterByProfile(allFindings, profile);
 
       // Step 3: Score
       setProgress({ step: "Computing score...", percent: 95 });
@@ -55,6 +59,7 @@ export function App() {
         scan_id: crypto.randomUUID?.() ?? Date.now().toString(36),
         model_name: model.name,
         model_format: model.format,
+        profile,
         score,
         rating: rating(score),
         summary,
@@ -68,7 +73,7 @@ export function App() {
       setErrorMsg(err instanceof Error ? err.message : String(err));
       setState("error");
     }
-  }, []);
+  }, [profile]);
 
   const checklist = useChecklist(
     scanResult?.findings ?? [],
@@ -82,6 +87,7 @@ export function App() {
     setErrorMsg("");
     setModelName("");
     setViewMode("findings");
+    setProfile("both");
   }, []);
 
   return (
@@ -120,7 +126,7 @@ export function App() {
       {/* Content */}
       <main className="max-w-3xl mx-auto px-4 py-6">
         {state === "idle" && (
-          <FolderPicker onSelect={handleFolderSelect} />
+          <FolderPicker onSelect={handleFolderSelect} profile={profile} onProfileChange={setProfile} />
         )}
 
         {state === "scanning" && (
@@ -138,7 +144,9 @@ export function App() {
                 {scanResult.model_name}
               </h2>
               <p className="text-xs text-gray-500">
-                Format: {scanResult.model_format} &middot; {scanResult.findings.length} findings
+                Format: {scanResult.model_format}
+                {scanResult.profile !== "both" && <> &middot; Profile: {scanResult.profile.toUpperCase()}</>}
+                {" "}&middot; {scanResult.findings.length} findings
               </p>
             </div>
 

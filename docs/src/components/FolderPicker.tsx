@@ -1,10 +1,20 @@
+import type { Profile } from "../scanner/types";
+
 interface FolderPickerProps {
   onSelect: (dir: FileSystemDirectoryHandle) => void;
+  profile: Profile;
+  onProfileChange: (p: Profile) => void;
 }
 
 const isSupported = typeof window !== "undefined" && "showDirectoryPicker" in window;
 
-export function FolderPicker({ onSelect }: FolderPickerProps) {
+const PROFILE_OPTIONS: { value: Profile; label: string; desc: string }[] = [
+  { value: "both", label: "All Checks", desc: "AI + Org standards" },
+  { value: "ai", label: "AI Readiness", desc: "Prep for AI only" },
+  { value: "org", label: "Org Standards", desc: "Power BI Standards only" },
+];
+
+export function FolderPicker({ onSelect, profile, onProfileChange }: FolderPickerProps) {
   const handleClick = async () => {
     try {
       const dir = await window.showDirectoryPicker({ mode: "read" });
@@ -34,12 +44,36 @@ export function FolderPicker({ onSelect }: FolderPickerProps) {
         </p>
 
         {isSupported ? (
-          <button
-            className="btn-primary text-sm px-6 py-3 w-full"
-            onClick={handleClick}
-          >
-            Select .SemanticModel Folder
-          </button>
+          <>
+            <div className="mb-4">
+              <p className="text-xs font-medium text-gray-500 mb-2">Linting profile</p>
+              <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5">
+                {PROFILE_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => onProfileChange(opt.value)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                      profile === opt.value
+                        ? "bg-white text-gray-900 shadow-sm border border-gray-200"
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                    title={opt.desc}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-gray-400 mt-1">
+                {PROFILE_OPTIONS.find((o) => o.value === profile)?.desc}
+              </p>
+            </div>
+            <button
+              className="btn-primary text-sm px-6 py-3 w-full"
+              onClick={handleClick}
+            >
+              Select .SemanticModel Folder
+            </button>
+          </>
         ) : (
           <div className="p-4 rounded-lg bg-amber-50 border border-amber-200">
             <p className="text-sm text-amber-700 font-semibold mb-1">Browser not supported</p>

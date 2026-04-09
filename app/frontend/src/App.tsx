@@ -7,6 +7,7 @@ import { ApplyButton } from "@/components/ApplyButton";
 import { ResultsSummary } from "@/components/ResultsSummary";
 import { HistoryView } from "@/components/HistoryView";
 import { NavBar } from "@/components/NavBar";
+import { StandardsDrawer } from "@/components/StandardsDrawer";
 import { useScan } from "@/hooks/useScan";
 import { useDecisions } from "@/hooks/useDecisions";
 import { useApi } from "@/hooks/useApi";
@@ -20,6 +21,7 @@ export default function App() {
   const [isApplying, setIsApplying] = useState(false);
   const [applyError, setApplyError] = useState<string | null>(null);
   const [applyResult, setApplyResult] = useState<ApplyResult | null>(null);
+  const [standardsOpen, setStandardsOpen] = useState(false);
 
   const handleSelect = useCallback(
     (path: string) => {
@@ -82,8 +84,22 @@ export default function App() {
           <h1 className="text-lg font-bold text-white leading-tight">Fabric Model AI Readiness</h1>
           <p className="text-xs text-slate-500">Semantic model analyzer for Copilot preparation</p>
         </div>
-        <span className="ml-auto text-xs text-slate-700">v0.1.0</span>
+        <div className="ml-auto flex items-center gap-3">
+          <span className="text-xs text-slate-700">v0.1.0</span>
+          <button
+            onClick={() => setStandardsOpen(true)}
+            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+            aria-label="Scoring standards"
+            title="Scoring standards"
+          >
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
       </header>
+
+      <StandardsDrawer open={standardsOpen} onClose={() => setStandardsOpen(false)} />
 
       {/* Main content */}
       <main className="flex-1 overflow-y-auto px-6 py-4">

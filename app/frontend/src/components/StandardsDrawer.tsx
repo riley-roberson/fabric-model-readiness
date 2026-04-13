@@ -6,14 +6,14 @@ interface StandardsDrawerProps {
 }
 
 const categories = [
-  { name: "AI Preparation", weight: 20, description: "Schema visibility, Copilot instructions, verified answers, noise field exclusion" },
-  { name: "Metadata Completeness", weight: 20, description: "Table/column/measure descriptions, synonyms, data categories" },
-  { name: "Schema Design", weight: 15, description: "Star schema structure, table naming, display folders, wide table detection" },
-  { name: "Measures & Calculations", weight: 15, description: "Explicit DAX measures, time intelligence, qualified references, no duplicates" },
-  { name: "Org Standards", weight: 10, description: "Display folders, RLS roles, date table marked, USERELATIONSHIP usage" },
-  { name: "Relationships", weight: 10, description: "No orphaned tables, no bidirectional or ambiguous paths, inactive relationship handling" },
-  { name: "Data Types", weight: 5, description: "Correct summarization settings, sort-by-column, no unnecessary floats" },
-  { name: "Data Consistency", weight: 5, description: "No year-partitioned tables, consistent naming patterns" },
+  { name: "AI Preparation", weight: 20, description: "Schema visibility, Copilot instructions, verified answers, noise field exclusion", profiles: ["ai"] as string[] },
+  { name: "Metadata Completeness", weight: 20, description: "Table/column/measure descriptions, synonyms, data categories", profiles: ["ai"] as string[] },
+  { name: "Schema Design", weight: 15, description: "Star schema structure, table naming, display folders, wide table detection", profiles: ["ai", "shared"] as string[] },
+  { name: "Measures & Calculations", weight: 15, description: "Explicit DAX measures, time intelligence, qualified references, no duplicates", profiles: ["ai", "org", "shared"] as string[] },
+  { name: "Org Standards", weight: 10, description: "Display folders, RLS roles, date table marked, USERELATIONSHIP usage", profiles: ["org"] as string[] },
+  { name: "Relationships", weight: 10, description: "No orphaned tables, no bidirectional or ambiguous paths, inactive relationship handling", profiles: ["ai", "shared"] as string[] },
+  { name: "Data Types", weight: 5, description: "Correct summarization settings, sort-by-column, no unnecessary floats", profiles: ["ai", "org", "shared"] as string[] },
+  { name: "Data Consistency", weight: 5, description: "No year-partitioned tables, consistent naming patterns", profiles: ["org"] as string[] },
 ];
 
 const ratings = [
@@ -24,18 +24,18 @@ const ratings = [
 ];
 
 const keyStandards = [
-  { title: "Star Schema Required", detail: "All models must be star schemas -- no flat tables or snowflakes." },
-  { title: "Fact Tables Hidden", detail: "Fact tables hidden from users; only surrogate keys + fact columns." },
-  { title: "Surrogate Keys Hidden", detail: "Surrogate keys on dimension tables must be hidden." },
-  { title: "Display Folders Required", detail: "Columns and measures must be organized in display folders." },
-  { title: "No Default Aggregations", detail: "All aggregations must be explicit DAX measures." },
-  { title: "Dedicated Measure Tables", detail: "All measures stored in dedicated measure tables." },
-  { title: "Fully Qualified References", detail: "Always use 'Table'[Column] syntax, never unqualified." },
-  { title: "No Unnecessary Floats", detail: "Avoid float data types unless strictly necessary." },
-  { title: "Date Table Marked", detail: "Calendar table must be marked as date table; no auto-generated date tables." },
-  { title: "RLS Roles Defined", detail: "At minimum Admin and General roles must be defined." },
-  { title: "USERELATIONSHIP Preferred", detail: "Use USERELATIONSHIP instead of duplicating dimension tables." },
-  { title: "No Bidirectional Relationships", detail: "Use CROSSFILTER in DAX instead of bidirectional relationships." },
+  { title: "Star Schema Required", detail: "All models must be star schemas -- no flat tables or snowflakes.", profile: "shared" },
+  { title: "Fact Tables Hidden", detail: "Fact tables hidden from users; only surrogate keys + fact columns.", profile: "shared" },
+  { title: "Surrogate Keys Hidden", detail: "Surrogate keys on dimension tables must be hidden.", profile: "shared" },
+  { title: "Display Folders Required", detail: "Columns and measures must be organized in display folders.", profile: "org" },
+  { title: "No Default Aggregations", detail: "All aggregations must be explicit DAX measures.", profile: "shared" },
+  { title: "Dedicated Measure Tables", detail: "All measures stored in dedicated measure tables.", profile: "org" },
+  { title: "Fully Qualified References", detail: "Always use 'Table'[Column] syntax, never unqualified.", profile: "org" },
+  { title: "No Unnecessary Floats", detail: "Avoid float data types unless strictly necessary.", profile: "org" },
+  { title: "Date Table Marked", detail: "Calendar table must be marked as date table; no auto-generated date tables.", profile: "org" },
+  { title: "RLS Roles Defined", detail: "At minimum Admin and General roles must be defined.", profile: "org" },
+  { title: "USERELATIONSHIP Preferred", detail: "Use USERELATIONSHIP instead of duplicating dimension tables.", profile: "org" },
+  { title: "No Bidirectional Relationships", detail: "Use CROSSFILTER in DAX instead of bidirectional relationships.", profile: "org" },
 ];
 
 export function StandardsDrawer({ open, onClose }: StandardsDrawerProps) {
@@ -109,6 +109,48 @@ export function StandardsDrawer({ open, onClose }: StandardsDrawerProps) {
               Critical-severity findings count as <span className="text-red-400 font-semibold">2x failures</span>,
               applying a heavier penalty.
             </p>
+            <p className="text-xs text-slate-400 leading-relaxed mt-2">
+              When a <span className="text-slate-200 font-semibold">scan profile</span> is active, only matching checks
+              are scored. Categories with no remaining checks are dropped and weights
+              are <span className="text-slate-200 font-semibold">re-normalized</span> to
+              100%, so the same model may score differently under different profiles.
+            </p>
+          </section>
+
+          {/* Scan profiles */}
+          <section>
+            <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-3">Scan Profiles</h3>
+            <div className="space-y-2">
+              <div className="bg-slate-800/50 rounded-lg px-3 py-2.5 border border-violet-500/20">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300">AI</span>
+                  <span className="text-xs font-semibold text-slate-200">Microsoft Prep for AI</span>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-snug">
+                  Checks tagged <span className="text-violet-400">ai</span> + <span className="text-slate-300">shared</span>.
+                  Focuses on Copilot readiness: descriptions, synonyms, AI schema, instructions, verified answers.
+                </p>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg px-3 py-2.5 border border-amber-500/20">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">ORG</span>
+                  <span className="text-xs font-semibold text-slate-200">Organizational Standards</span>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-snug">
+                  Checks tagged <span className="text-amber-400">org</span> + <span className="text-slate-300">shared</span>.
+                  Focuses on internal conventions: display folders, RLS, DAX patterns, measure tables.
+                </p>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg px-3 py-2.5 border border-slate-600/40">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-600/30 text-slate-300">BOTH</span>
+                  <span className="text-xs font-semibold text-slate-200">All Checks (Default)</span>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-snug">
+                  Runs every check across all categories. Full 48-check sweep with no filtering.
+                </p>
+              </div>
+            </div>
           </section>
 
           {/* Category weights */}
@@ -118,7 +160,19 @@ export function StandardsDrawer({ open, onClose }: StandardsDrawerProps) {
               {categories.map((cat) => (
                 <div key={cat.name}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-semibold text-slate-300">{cat.name}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-semibold text-slate-300">{cat.name}</span>
+                      {cat.profiles.map((p) => (
+                        <span
+                          key={p}
+                          className={`text-[9px] font-bold uppercase tracking-wider px-1 py-0.5 rounded ${
+                            p === "ai" ? "bg-violet-500/20 text-violet-300" :
+                            p === "org" ? "bg-amber-500/20 text-amber-300" :
+                            "bg-slate-600/30 text-slate-400"
+                          }`}
+                        >{p}</span>
+                      ))}
+                    </div>
                     <span className="text-xs font-bold text-blue-400 tabular-nums">{cat.weight}%</span>
                   </div>
                   <div className="w-full bg-slate-800 rounded-full h-1.5 mb-1">
@@ -174,7 +228,16 @@ export function StandardsDrawer({ open, onClose }: StandardsDrawerProps) {
             <div className="space-y-2">
               {keyStandards.map((s) => (
                 <div key={s.title} className="bg-slate-800/50 rounded-lg px-3 py-2">
-                  <p className="text-xs font-semibold text-slate-200">{s.title}</p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-xs font-semibold text-slate-200">{s.title}</p>
+                    <span
+                      className={`text-[9px] font-bold uppercase tracking-wider px-1 py-0.5 rounded ${
+                        s.profile === "ai" ? "bg-violet-500/20 text-violet-300" :
+                        s.profile === "org" ? "bg-amber-500/20 text-amber-300" :
+                        "bg-slate-600/30 text-slate-400"
+                      }`}
+                    >{s.profile}</span>
+                  </div>
                   <p className="text-[11px] text-slate-500 leading-snug mt-0.5">{s.detail}</p>
                 </div>
               ))}

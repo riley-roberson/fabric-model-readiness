@@ -5,10 +5,13 @@ import type { UseChecklistReturn } from "../hooks/useChecklist";
 import { ChecklistProgress } from "./ChecklistProgress";
 import { ChecklistItem } from "./ChecklistItem";
 import { ChecklistBundle } from "./ChecklistBundle";
+import { ManualChecklistSection } from "./ManualChecklistSection";
 
 interface ChecklistPanelProps {
   findings: Finding[];
   checklist: UseChecklistReturn;
+  /** Manual items are all Prep-for-AI work, so they are hidden in the org profile. */
+  showManual: boolean;
 }
 
 const SECTION_COLORS: Record<Severity, { border: string; text: string; dot: string }> = {
@@ -34,9 +37,9 @@ function groupByCheck(findings: Finding[]): CheckGroup[] {
   return Array.from(map.entries()).map(([check, items]) => ({ check, findings: items }));
 }
 
-export function ChecklistPanel({ findings, checklist }: ChecklistPanelProps) {
+export function ChecklistPanel({ findings, checklist, showManual }: ChecklistPanelProps) {
   const [hideAddressed, setHideAddressed] = useState(false);
-  const { isChecked, toggle, clearAll, stats } = checklist;
+  const { isChecked, toggle, clearAll, stats, isManualChecked, toggleManual, manualStats } = checklist;
 
   const grouped = useMemo(() => {
     const groups: Record<Severity, Finding[]> = { critical: [], high: [], medium: [], low: [], info: [] };
@@ -51,7 +54,11 @@ export function ChecklistPanel({ findings, checklist }: ChecklistPanelProps) {
 
   return (
     <div>
-      <ChecklistProgress stats={stats} onClearAll={clearAll} />
+      <ChecklistProgress
+        stats={stats}
+        onClearAll={clearAll}
+        manualStats={showManual ? manualStats : undefined}
+      />
 
       <div className="flex items-center gap-2 mb-4">
         <label className="flex items-center gap-1.5 cursor-pointer">
@@ -65,18 +72,16 @@ export function ChecklistPanel({ findings, checklist }: ChecklistPanelProps) {
         </label>
       </div>
 
-      {allDone && !hideAddressed && (
-        <div className="card p-6 text-center mb-4">
-          <p className="text-sm font-bold text-emerald-600 mb-1">All findings addressed</p>
-          <p className="text-xs text-gray-500">Every item on the checklist has been marked as addressed.</p>
-        </div>
-      )}
-
-      {allDone && hideAddressed && (
+      {allDone && (
         <div className="card p-6 text-center mb-4">
           <p className="text-sm font-bold text-emerald-600 mb-1">All findings addressed</p>
           <p className="text-xs text-gray-500">
-            Uncheck "Hide addressed items" to see your completed checklist.
+            {hideAddressed
+              ? 'Uncheck "Hide addressed items" to see your completed checklist.'
+              : "Every scanned finding has been marked as addressed."}
+            {showManual && manualStats.checked < manualStats.total && (
+              <> {manualStats.total - manualStats.checked} manual step(s) remain below.</>
+            )}
           </p>
         </div>
       )}
@@ -120,6 +125,15 @@ export function ChecklistPanel({ findings, checklist }: ChecklistPanelProps) {
           </div>
         );
       })}
+
+      {showManual && (
+        <ManualChecklistSection
+          stats={manualStats}
+          isManualChecked={isManualChecked}
+          onToggle={toggleManual}
+          hideAddressed={hideAddressed}
+        />
+      )}
     </div>
   );
 }

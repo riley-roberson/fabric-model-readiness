@@ -12,6 +12,11 @@ const DIVISION_OPERATOR = /(?<!\w)\/(?!\*)/;
 const DIRECT_MEASURE_REF = /^\s*\[[\w\s]+\]\s*$/;
 const MEASURE_TABLE_PATTERN = /^(measures?|_measures?|metrics?)/i;
 
+const AGGREGATING_SUMMARIZATION = ["sum", "average", "count", "distinctcount", "min", "max"];
+const NUMERIC_DATA_TYPES = ["int64", "double", "decimal", "single", "whole number", "decimal number", "currency"];
+/** Names where an implicit aggregation is meaningless anyway (already flagged by data_types). */
+const NON_ADDITIVE_NAME = /(year|month|day|quarter|week|id|key|code|number|age|rank|percent|pct|rate|ratio)/i;
+
 export function check(model: SemanticModel): Finding[] {
   const findings: Finding[] = [];
 
@@ -58,6 +63,9 @@ export function check(model: SemanticModel): Finding[] {
       message: "Model has a date table but no time intelligence measures (TOTALYTD, SAMEPERIODLASTYEAR, etc.).",
     }));
   }
+
+  // Implicit measures: aggregable columns with no explicit measure over them
+  checkExplicitMeasures(model, allMeasures, findings);
 
   // Duplicate / overlapping measure names
   const nameMap: Record<string, string[]> = {};
@@ -185,4 +193,44 @@ export function check(model: SemanticModel): Finding[] {
   }
 
   return findings;
+}
+
+/**
+ * "Create explicit DAX measures (avoid relying on implicit measures)".
+ *
+ * A visible numeric column with an aggregating summarizeBy is an implicit
+ * measure. It is only a problem when no explicit measure covers that column --
+ * the agent then has to invent the aggregation itself.
+ */
+function checkExplicitMeasures(
+  model: SemanticModel,
+  allMeasures: { table: string; name: string; expression: string }[],
+  findings: Finding[],
+): void {
+  const allExpressions = allMeasures.map((m) => m.expression).join("\n").toLowerCase();
+
+  for (const table of model.tables) {
+    if (table.is_hidden || table.is_calculation_group || table.is_field_parameter) continue;
+
+    for (const col of table.columns) {
+      if (col.is_hidden) continue;
+      if (!NUMERIC_DATA_TYPES.includes(col.data_type.toLowerCase())) continue;
+      if (!AGGREGATING_SUMMARIZATION.includes(col.summarize_by.toLowerCase())) continue;
+      if (NON_ADDITIVE_NAME.test(col.name)) continue;
+
+      // Covered if any measure already references the column.
+      if (allExpressions.includes(`[${col.name.toLowerCase()}]`)) continue;
+
+      findings.push(makeFinding({
+        category: "measures",
+        check: "explicit_measures",
+        severity: "medium",
+        object: `${table.name}.${col.name}`,
+        object_type: "column",
+        message: `Column '${col.name}' aggregates implicitly (summarizeBy: ${col.summarize_by}) and no measure references it. Data Agent gets an unnamed, undocumented aggregation.`,
+        recommendation: `Create an explicit measure over '${col.name}', then set the column's summarization to 'Don't summarize'.`,
+        auto_fixable: true,
+      }));
+    }
+  }
 }

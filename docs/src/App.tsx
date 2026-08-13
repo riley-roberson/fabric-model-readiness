@@ -161,7 +161,11 @@ export function App() {
             {viewMode === "findings" ? (
               <FindingsPanel findings={scanResult.findings} />
             ) : (
-              <ChecklistPanel findings={scanResult.findings} checklist={checklist} />
+              <ChecklistPanel
+                findings={scanResult.findings}
+                checklist={checklist}
+                showManual={scanResult.profile !== "org"}
+              />
             )}
           </div>
         )}

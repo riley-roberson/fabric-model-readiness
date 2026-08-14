@@ -10,8 +10,8 @@ __pycache__/
 .env
 .pytest_cache/
 .ruff_cache/
-fabric-model-readiness/dist/
-fabric-model-readiness/build/
+app/fabric-model-readiness/dist/
+app/fabric-model-readiness/build/
 
 # Node / Electron
 app/node_modules/
@@ -19,7 +19,7 @@ app/dist-electron/
 app/dist-frontend/
 app/release/
 
-# GitHub Pages prototype
+# Docs (Vercel)
 docs/node_modules/
 docs/dist/
 
@@ -36,9 +36,6 @@ tools/pbi-tools/
 *.pdf
 nul
 .obsidian/
-Fundamentals of Software Engineering.md
-Implementation Guide.md
-Intro to Software Tests.md
 
 # OS
 Thumbs.db

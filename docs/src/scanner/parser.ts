@@ -174,6 +174,22 @@ function parseModelDef(modelDef: Record<string, unknown>): {
     };
   });
 
+  // Synonyms live in the culture's linguistic schema, not on the column.
+  const tmslSynonyms = new Map<string, string[]>();
+  for (const culture of (modelDef.cultures ?? []) as Record<string, unknown>[]) {
+    const metadata = culture?.linguisticMetadata as Record<string, unknown> | undefined;
+    const content = metadata?.content;
+    const schema = typeof content === "string" ? content : JSON.stringify(content ?? {});
+    collectCultureSynonyms(`linguisticMetadata = ${schema}`, tmslSynonyms);
+  }
+  if (tmslSynonyms.size > 0) {
+    for (const table of tables) {
+      for (const col of table.columns) {
+        col.synonyms = tmslSynonyms.get(`${table.name} ${col.name}`) ?? [];
+      }
+    }
+  }
+
   const rawRels = (modelDef.relationships ?? []) as Record<string, unknown>[];
   const relationships: RelationshipInfo[] = rawRels.map((r) => ({
     from_table: String(r.fromTable ?? ""),
@@ -277,6 +293,24 @@ async function parseTmdlFolder(
   // DAX user-defined functions live in definition/functions/*.tmdl
   const functionsDir = await getSubDirectory(modelDir, "functions");
   const hasUdfs = functionsDir ? (await listEntries(functionsDir, ".tmdl")).length > 0 : false;
+
+  // Synonyms are not a column property -- they live in the culture's
+  // linguistic schema, keyed by table/column binding.
+  const culturesDir = await getSubDirectory(modelDir, "cultures");
+  if (culturesDir) {
+    const synonyms = new Map<string, string[]>();
+    for (const entry of await listEntries(culturesDir, ".tmdl")) {
+      const text = await readTextFile(culturesDir, entry.name);
+      if (text) collectCultureSynonyms(text, synonyms);
+    }
+    if (synonyms.size > 0) {
+      for (const table of tables) {
+        for (const col of table.columns) {
+          col.synonyms = synonyms.get(`${table.name} ${col.name}`) ?? [];
+        }
+      }
+    }
+  }
 
   return {
     name: modelName,
@@ -655,4 +689,90 @@ function getIndent(line: string): number {
 function normalizeExpression(expr: unknown): string {
   if (Array.isArray(expr)) return expr.join("\n");
   return expr ? String(expr) : "";
+}
+
+/**
+ * Collects column synonyms from a culture's Q&A linguistic schema.
+ *
+ * Synonyms are not a TMDL column property. They live in
+ * definition/cultures/<culture>.tmdl as an embedded JSON linguistic schema,
+ * where each entity binds to a table (ConceptualEntity) and optionally a column
+ * (ConceptualProperty), carrying the terms users might say.
+ *
+ * Keys the output map as `${table} ${column}` -- a space cannot appear in the
+ * join between them the way a dot can appear inside a table name.
+ */
+function collectCultureSynonyms(content: string, out: Map<string, string[]>): void {
+  const schema = extractLinguisticJson(content);
+  if (!schema) return;
+
+  const entities = schema.Entities;
+  if (!entities || typeof entities !== "object") return;
+
+  for (const entity of Object.values(entities as Record<string, unknown>)) {
+    if (!entity || typeof entity !== "object") continue;
+
+    const definition = (entity as Record<string, unknown>).Definition as Record<string, unknown> | undefined;
+    const binding = definition?.Binding as Record<string, unknown> | undefined;
+    const table = binding?.ConceptualEntity;
+    const column = binding?.ConceptualProperty;
+    if (typeof table !== "string" || typeof column !== "string") continue;
+
+    const rawTerms = (entity as Record<string, unknown>).Terms;
+    const terms: string[] = [];
+    if (Array.isArray(rawTerms)) {
+      for (const item of rawTerms) {
+        if (typeof item === "string") terms.push(item);
+        else if (item && typeof item === "object") terms.push(...Object.keys(item));
+      }
+    }
+
+    // The generated term is usually the column name itself, which is not a
+    // synonym in any useful sense.
+    const normalized = column.replace(/[\s_]/g, "").toLowerCase();
+    const useful = terms.filter((t) => t.replace(/[\s_]/g, "").toLowerCase() !== normalized);
+    if (useful.length === 0) continue;
+
+    const key = `${table} ${column}`;
+    const existing = out.get(key) ?? [];
+    for (const term of useful) {
+      if (!existing.includes(term)) existing.push(term);
+    }
+    out.set(key, existing);
+  }
+}
+
+/** Pulls the JSON object that follows `linguisticMetadata =`. */
+function extractLinguisticJson(content: string): Record<string, unknown> | null {
+  const marker = content.indexOf("linguisticMetadata");
+  if (marker < 0) return null;
+  const start = content.indexOf("{", marker);
+  if (start < 0) return null;
+
+  // Brace-match rather than regex: the schema nests several levels deep.
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = start; i < content.length; i++) {
+    const ch = content[i];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (ch === "\\") escaped = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') inString = true;
+    else if (ch === "{") depth++;
+    else if (ch === "}") {
+      depth--;
+      if (depth === 0) {
+        try {
+          return JSON.parse(content.slice(start, i + 1));
+        } catch {
+          return null;
+        }
+      }
+    }
+  }
+  return null;
 }

@@ -175,6 +175,13 @@ def _parse_model_def(model_def: dict) -> tuple[list[TableInfo], list[Relationshi
             )
         )
 
+    # Synonyms live in the culture's linguistic schema, not on the column.
+    tmsl_synonyms = _tmsl_culture_synonyms(model_def)
+    if tmsl_synonyms:
+        for table in tables:
+            for col in table.columns:
+                col.synonyms = tmsl_synonyms.get((table.name, col.name), [])
+
     relationships = [
         RelationshipInfo(
             from_table=r.get("fromTable", ""),
@@ -466,6 +473,14 @@ def _parse_tmdl_folder(model_dir: Path, model_name: str, source_path: str) -> Se
     # DAX user-defined functions live in their own folder alongside tables/.
     functions_dir = model_dir / "functions"
     has_udfs = functions_dir.is_dir() and any(functions_dir.glob("*.tmdl"))
+
+    # Synonyms are not a column property -- they live in the culture's
+    # linguistic schema, keyed by table/column binding.
+    synonyms = _parse_tmdl_cultures(model_dir / "cultures")
+    if synonyms:
+        for table in tables:
+            for col in table.columns:
+                col.synonyms = synonyms.get((table.name, col.name), [])
 
     return SemanticModel(
         name=model_name,
@@ -875,3 +890,140 @@ def _parse_copilot_folder(folder: Path) -> CopilotConfig:
         config.settings = json.loads(settings_path.read_text(encoding="utf-8"))
 
     return config
+
+
+def _parse_tmdl_cultures(cultures_dir: Path) -> dict[tuple[str, str], list[str]]:
+    """Collect column synonyms from the Q&A linguistic schema.
+
+    Synonyms are not a TMDL column property. They live in
+    definition/cultures/<culture>.tmdl as an embedded JSON linguistic schema,
+    where each entity binds to a table (ConceptualEntity) and optionally a
+    column (ConceptualProperty), carrying the terms users might say.
+
+    Returns {(table, column): [synonym, ...]}. Missing or unreadable cultures
+    yield an empty mapping -- a model with no linguistic schema simply has no
+    synonyms, which is a finding, not an error.
+    """
+    if not cultures_dir.is_dir():
+        return {}
+
+    collected: dict[tuple[str, str], list[str]] = {}
+    for culture_file in sorted(cultures_dir.glob("*.tmdl")):
+        try:
+            content = culture_file.read_text(encoding="utf-8")
+        except Exception:
+            continue
+
+        schema = _extract_linguistic_json(content)
+        if not schema:
+            continue
+
+        for terms_by_target in _entity_synonyms(schema):
+            for target, terms in terms_by_target.items():
+                collected.setdefault(target, [])
+                for term in terms:
+                    if term not in collected[target]:
+                        collected[target].append(term)
+
+    return collected
+
+
+def _extract_linguistic_json(content: str) -> dict | None:
+    """Pull the JSON object that follows `linguisticMetadata =`."""
+    marker = content.find("linguisticMetadata")
+    if marker < 0:
+        return None
+    start = content.find("{", marker)
+    if start < 0:
+        return None
+
+    # Brace-match rather than regex: the schema nests several levels deep.
+    depth = 0
+    in_string = False
+    escaped = False
+    for i in range(start, len(content)):
+        ch = content[i]
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if ch == '"':
+            in_string = True
+        elif ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                try:
+                    return json.loads(content[start:i + 1])
+                except json.JSONDecodeError:
+                    return None
+    return None
+
+
+def _entity_synonyms(schema: dict) -> list[dict[tuple[str, str], list[str]]]:
+    """Map linguistic-schema entities onto (table, column) -> terms."""
+    entities = schema.get("Entities")
+    if not isinstance(entities, dict):
+        return []
+
+    out: list[dict[tuple[str, str], list[str]]] = []
+    for entity in entities.values():
+        if not isinstance(entity, dict):
+            continue
+        binding = entity.get("Definition", {}).get("Binding", {})
+        table = binding.get("ConceptualEntity")
+        column = binding.get("ConceptualProperty")
+        if not table or not column:
+            continue  # table-level entity, or an unbound one
+
+        terms: list[str] = []
+        for item in entity.get("Terms", []) or []:
+            if isinstance(item, dict):
+                terms.extend(str(k) for k in item)
+            elif isinstance(item, str):
+                terms.append(item)
+
+        # The generated term is usually the column name itself, which is not a
+        # synonym in any useful sense.
+        normalized_column = column.replace(" ", "").replace("_", "").lower()
+        terms = [
+            t for t in terms
+            if t.replace(" ", "").replace("_", "").lower() != normalized_column
+        ]
+
+        if terms:
+            out.append({(str(table), str(column)): terms})
+
+    return out
+
+
+def _tmsl_culture_synonyms(model_def: dict) -> dict[tuple[str, str], list[str]]:
+    """Same linguistic schema as TMDL, reached through model.cultures[]."""
+    collected: dict[tuple[str, str], list[str]] = {}
+
+    for culture in model_def.get("cultures", []) or []:
+        if not isinstance(culture, dict):
+            continue
+        metadata = culture.get("linguisticMetadata", {})
+        schema = metadata.get("content") if isinstance(metadata, dict) else None
+        if isinstance(schema, str):
+            try:
+                schema = json.loads(schema)
+            except json.JSONDecodeError:
+                continue
+        if not isinstance(schema, dict):
+            continue
+
+        for terms_by_target in _entity_synonyms(schema):
+            for target, terms in terms_by_target.items():
+                collected.setdefault(target, [])
+                for term in terms:
+                    if term not in collected[target]:
+                        collected[target].append(term)
+
+    return collected

@@ -8,6 +8,17 @@ from shared.model import Category, Finding, ObjectType, SemanticModel, Severity
 
 NO_SUMMARIZE_KEYWORDS = {"year", "month", "day", "id", "age", "code", "number", "key"}
 
+TEXT_TYPES = {"string", "text"}
+# Names implying a date value. Excludes *name/*label, which are legitimately text.
+DATE_NAME = re.compile(r"(^|[\s_])(date|datetime|timestamp)([\s_]|$)|date$", re.IGNORECASE)
+# Names implying a numeric value.
+NUMERIC_NAME = re.compile(
+    r"(^|[\s_])(amount|amt|price|cost|revenue|sales|qty|quantity|total|balance|units)([\s_]|$)"
+    r"|(amount|price|cost|qty|quantity|total)$",
+    re.IGNORECASE,
+)
+LABEL_SUFFIX = re.compile(r"(name|label|desc|description|text|code|id|key)$", re.IGNORECASE)
+
 
 def check(model: SemanticModel) -> list[Finding]:
     findings: list[Finding] = []
@@ -15,6 +26,37 @@ def check(model: SemanticModel) -> list[Finding]:
     for table in model.tables:
         for col in table.columns:
             col_lower = col.name.lower()
+
+            # "Fix incorrect data types" -- values stored as text
+            if col.data_type.lower() in TEXT_TYPES and not LABEL_SUFFIX.search(col.name):
+                if DATE_NAME.search(col.name):
+                    findings.append(Finding(
+                        category=Category.DATA_TYPES,
+                        check="incorrect_data_types",
+                        severity=Severity.HIGH,
+                        object=f"{table.name}.{col.name}",
+                        object_type=ObjectType.COLUMN,
+                        message=(
+                            f"Column '{col.name}' holds a date but is typed as text. Date "
+                            "filtering, sorting, and time intelligence will not work."
+                        ),
+                        recommendation="Change the data type to Date or Date/Time.",
+                        auto_fixable=True,
+                    ))
+                elif NUMERIC_NAME.search(col.name):
+                    findings.append(Finding(
+                        category=Category.DATA_TYPES,
+                        check="incorrect_data_types",
+                        severity=Severity.HIGH,
+                        object=f"{table.name}.{col.name}",
+                        object_type=ObjectType.COLUMN,
+                        message=(
+                            f"Column '{col.name}' holds a numeric value but is typed as text, so "
+                            "it cannot be aggregated."
+                        ),
+                        recommendation="Change the data type to Decimal Number or Whole Number.",
+                        auto_fixable=True,
+                    ))
 
             # Default summarization: flag SUM on year/month/day/id/age columns
             should_not_sum = any(kw in col_lower for kw in NO_SUMMARIZE_KEYWORDS)

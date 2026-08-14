@@ -20,6 +20,16 @@ DIVISION_OPERATOR = re.compile(r"(?<!\w)/(?!\*)")
 DIRECT_MEASURE_REF = re.compile(r"^\s*\[[\w\s]+\]\s*$")
 MEASURE_TABLE_PATTERN = re.compile(r"^(measures?|_measures?|metrics?)", re.IGNORECASE)
 
+AGGREGATING_SUMMARIZATION = {"sum", "average", "count", "distinctcount", "min", "max"}
+NUMERIC_DATA_TYPES = {
+    "int64", "double", "decimal", "single", "whole number", "decimal number", "currency",
+}
+# Names where an implicit aggregation is meaningless anyway (already flagged by data_types).
+NON_ADDITIVE_NAME = re.compile(
+    r"(year|month|day|quarter|week|id|key|code|number|age|rank|percent|pct|rate|ratio)",
+    re.IGNORECASE,
+)
+
 
 def check(model: SemanticModel) -> list[Finding]:
     findings: list[Finding] = []
@@ -99,6 +109,9 @@ def check(model: SemanticModel) -> list[Finding]:
                 recommendation="Move measures to a dedicated measure table (e.g., '_Measures').",
                 auto_fixable=False,
             ))
+
+    # Implicit measures: aggregable columns with no explicit measure over them
+    _check_explicit_measures(model, all_measures, findings)
 
     # DAX pattern checks on each measure expression
     for table, name, expression in all_measures:
@@ -193,3 +206,52 @@ def check(model: SemanticModel) -> list[Finding]:
             ))
 
     return findings
+
+
+def _check_explicit_measures(
+    model: SemanticModel,
+    all_measures: list[tuple[str, str, str]],
+    findings: list[Finding],
+) -> None:
+    """"Create explicit DAX measures (avoid relying on implicit measures)".
+
+    A visible numeric column with an aggregating summarizeBy is an implicit
+    measure. It is only a problem when no explicit measure covers that column --
+    the agent then has to invent the aggregation itself.
+    """
+    all_expressions = "\n".join(expr for _, _, expr in all_measures).lower()
+
+    for table in model.tables:
+        if table.is_hidden or table.is_calculation_group or table.is_field_parameter:
+            continue
+
+        for col in table.columns:
+            if col.is_hidden:
+                continue
+            if col.data_type.lower() not in NUMERIC_DATA_TYPES:
+                continue
+            if col.summarize_by.lower() not in AGGREGATING_SUMMARIZATION:
+                continue
+            if NON_ADDITIVE_NAME.search(col.name):
+                continue
+
+            # Covered if any measure already references the column.
+            if f"[{col.name.lower()}]" in all_expressions:
+                continue
+
+            findings.append(Finding(
+                category=Category.MEASURES,
+                check="explicit_measures",
+                severity=Severity.MEDIUM,
+                object=f"{table.name}.{col.name}",
+                object_type=ObjectType.COLUMN,
+                message=(
+                    f"Column '{col.name}' aggregates implicitly (summarizeBy: {col.summarize_by}) "
+                    "and no measure references it. Data Agent gets an unnamed, undocumented aggregation."
+                ),
+                recommendation=(
+                    f"Create an explicit measure over '{col.name}', then set the column's "
+                    "summarization to 'Don't summarize'."
+                ),
+                auto_fixable=True,
+            ))

@@ -10,6 +10,8 @@ GEOGRAPHY_KEYWORDS = {"city", "state", "country", "zip", "postal", "region", "la
 def check(model: SemanticModel) -> list[Finding]:
     findings: list[Finding] = []
 
+    _check_row_labels(model, findings)
+
     for table in model.tables:
         # Table descriptions
         if not table.description.strip():
@@ -75,3 +77,46 @@ def check(model: SemanticModel) -> list[Finding]:
                 ))
 
     return findings
+
+
+def _check_row_labels(model: SemanticModel, findings: list[Finding]) -> None:
+    """Row labels tell Q&A and Data Agent which column names a row.
+
+    Without one, "show me the top customers" has no obvious column to return.
+    The checklist calls this out especially for dimension tables.
+
+    A dimension is a table something else points at. Tables on the many side are
+    facts, and disconnected tables are a structural problem already reported by
+    star_schema_structure -- neither should be asked for a row label.
+    """
+    one_side_tables = {r.to_table for r in model.relationships}
+    many_side_tables = {r.from_table for r in model.relationships}
+
+    for table in model.tables:
+        if table.is_hidden or table.is_calculation_group or table.is_field_parameter:
+            continue
+        if table.name not in one_side_tables:
+            continue
+        if table.name in many_side_tables:
+            continue
+        if len(table.columns) < 2:
+            continue
+        if any(c.is_default_label for c in table.columns):
+            continue
+
+        findings.append(Finding(
+            category=Category.METADATA_COMPLETENESS,
+            check="row_label_defined",
+            severity=Severity.MEDIUM,
+            object=table.name,
+            object_type=ObjectType.TABLE,
+            message=(
+                f"Dimension table '{table.name}' has no row label defined. Data Agent has no "
+                "designated column to identify a row by."
+            ),
+            recommendation=(
+                "In Power BI Desktop, set the row label to the column that names the entity "
+                "(e.g. Customer Name on Customer)."
+            ),
+            auto_fixable=True,
+        ))

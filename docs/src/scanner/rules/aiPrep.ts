@@ -15,9 +15,40 @@
 import type { Finding, SemanticModel, TableInfo } from "../types";
 import { makeFinding } from "../types";
 
-/** Column-name shapes that should stay out of the AI schema. */
-const NOISE_SUFFIXES = /(^|[\s_])(id|ids|key|keys|sk|fk|guid|uid|idx|index|sort|sortorder|ordinal|rowversion|hash)$/i;
+/**
+ * Column-name shapes that should stay out of the AI schema.
+ *
+ * Matched against name *tokens* rather than a raw suffix regex. An earlier
+ * suffix pattern anchored on (^|[\s_]) to avoid firing on words that merely end
+ * in a noise substring ("Valid", "Paid", "Monkey"), but that also meant it only
+ * saw separated forms -- "Customer ID" matched while the far more common
+ * "CustomerID" did not. Tokenizing on camelCase boundaries catches both without
+ * reintroducing the false positives.
+ */
+const NOISE_TOKENS = new Set([
+  "id", "ids", "key", "keys", "sk", "fk", "guid", "uid", "idx", "index",
+  "sort", "sortorder", "ordinal", "rowversion", "hash",
+]);
 const NOISE_PREFIXES = /^(sk|fk|pk|idx)([\s_]|$)/i;
+
+function nameTokens(name: string): string[] {
+  return name
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .split(/[\s_\-.]+/)
+    .filter(Boolean);
+}
+
+/** True when a column name reads as a key, index, or sort helper. */
+export function isNoiseColumnName(name: string): boolean {
+  const trimmed = name.trim();
+  if (NOISE_PREFIXES.test(trimmed)) return true;
+
+  const tokens = nameTokens(trimmed).map((t) => t.toLowerCase());
+  if (tokens.length === 0) return false;
+  if (NOISE_TOKENS.has(tokens[tokens.length - 1])) return true;
+  // Two-word forms that are only noise when joined: "Sort Order", "SortOrder".
+  return tokens.length >= 2 && NOISE_TOKENS.has(tokens[tokens.length - 2] + tokens[tokens.length - 1]);
+}
 
 /** Names suggesting a helper or intermediate calculation, not a reportable metric. */
 const HELPER_MEASURE = /^(_|tmp|temp|test|helper|aux|base|calc)|(\b(helper|temp|internal|scratch|do not use|dnu)\b)/i;
@@ -34,6 +65,13 @@ export function check(model: SemanticModel): Finding[] {
   checkAiDataSchema(model, findings);
   checkVerifiedAnswers(model, findings);
   checkAiInstructions(model, findings);
+
+  // Deliberately outside checkAiDataSchema: a verified answer pointing at a
+  // hidden column fails whether or not a Prep for AI schema has been configured,
+  // and that function returns early when schema.json is absent.
+  if (model.copilot.verified_answers.length > 0 && model.tables.length > 0) {
+    checkHiddenFieldConflicts(model, findings);
+  }
 
   return findings;
 }
@@ -75,11 +113,6 @@ function checkAiDataSchema(model: SemanticModel, findings: Finding[]): void {
 
   // Noise columns that should not be exposed at all
   checkNoiseFields(model, findings);
-
-  // "Verify no fields needed for verified answers are hidden"
-  if (copilot.verified_answers.length > 0 && model.tables.length > 0) {
-    checkHiddenFieldConflicts(model, findings);
-  }
 }
 
 /**
@@ -216,8 +249,7 @@ function checkNoiseFields(model: SemanticModel, findings: Finding[]): void {
   for (const table of model.tables) {
     for (const col of table.columns) {
       if (col.is_hidden) continue;
-      const name = col.name.trim();
-      if (!NOISE_SUFFIXES.test(name) && !NOISE_PREFIXES.test(name)) continue;
+      if (!isNoiseColumnName(col.name)) continue;
       findings.push(makeFinding({
         category: "ai_preparation",
         check: "noise_fields_excluded",

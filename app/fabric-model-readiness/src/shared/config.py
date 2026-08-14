@@ -17,10 +17,22 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 SCRATCH_DIR = PROJECT_ROOT / ".scratch"
 HISTORY_DIR = PROJECT_ROOT / ".history"
 FINDINGS_DIR = PROJECT_ROOT / "findings"
+BACKUP_DIR = PROJECT_ROOT / ".backups"
 
 SCRATCH_DIR.mkdir(exist_ok=True)
 HISTORY_DIR.mkdir(exist_ok=True)
 FINDINGS_DIR.mkdir(exist_ok=True)
+BACKUP_DIR.mkdir(exist_ok=True)
+
+# Repo root: app/fabric-model-readiness/ -> app/ -> <repo>
+REPO_ROOT = PROJECT_ROOT.parent.parent
+
+# The Power BI Modeling MCP server, downloaded separately into tools/.
+MCP_SERVER_PATH: str = os.getenv(
+    "MCP_SERVER_PATH",
+    str(REPO_ROOT / "tools" / "powerbi-modeling-mcp" / "extracted" / "extension"
+        / "server" / "powerbi-modeling-mcp.exe"),
+)
 
 # ---------------------------------------------------------------------------
 # Anthropic API

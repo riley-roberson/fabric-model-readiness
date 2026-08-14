@@ -1,0 +1,112 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 758.63088471965023,
+            "y": 487.0886039049085
+          },
+          "nodeIndex": "Customer",
+          "nodeLineageTag": "350e919c-01e2-4604-bd8d-0a31a90fd8b5",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 264.63088471965034,
+            "y": 109.625
+          },
+          "nodeIndex": "Date",
+          "nodeLineageTag": "21285277-fedd-4d9e-9f71-cc629c2433a6",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 603.76464982287393,
+            "y": 104.625
+          },
+          "nodeIndex": "Product",
+          "nodeLineageTag": "8a771af5-80d8-4ce5-89e0-c4c70637c66a",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 84,
+            "y": 484.25505268311144
+          },
+          "nodeIndex": "Store",
+          "nodeLineageTag": "7ab15d10-68d0-4a54-9794-edadbcb2eb89",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 991.63088471965011,
+            "y": 170.97753950849085
+          },
+          "nodeIndex": "⍟ Big & Bulky Measures",
+          "nodeLineageTag": "46cbf1a6-c771-4b31-addd-0298c1713a66",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 1250.63088471965,
+            "y": 163.72753950849085
+          },
+          "nodeIndex": "⌂ Local Measures",
+          "nodeLineageTag": "03bef03e-e530-44dd-b5f4-b20f087bce78",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 401.65368673700016,
+            "y": 495.3300790169817
+          },
+          "nodeIndex": "Fact - Sales",
+          "size": {
+            "height": 304,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

@@ -1,0 +1,155 @@
+table Date
+	lineageTag: 21285277-fedd-4d9e-9f71-cc629c2433a6
+
+	column Date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: fcd574fb-893a-4943-9dba-b4c67a8bb1b5
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: fa6cb49b-f824-4ecb-bfe5-5d854f65e74f
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Quarter'
+		dataType: string
+		lineageTag: 58e42c03-b632-4ac1-82c6-5fd22c93096b
+		summarizeBy: none
+		sourceColumn: Year Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Quarter Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 3250219a-f570-445b-b867-6938ed016cc5
+		summarizeBy: none
+		sourceColumn: Year Quarter Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		dataType: string
+		lineageTag: 30d92885-2f83-4923-9791-2f58ef6ab30b
+		summarizeBy: none
+		sourceColumn: Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Month'
+		dataType: string
+		lineageTag: 2e69ecf4-6072-490b-aac1-de660ce7a361
+		summarizeBy: none
+		sourceColumn: Year Month
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Month Short'
+		dataType: string
+		lineageTag: 05f2e687-48f3-4a01-a71f-f282cac68c8d
+		summarizeBy: none
+		sourceColumn: Year Month Short
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Month Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 4b248273-2f20-490e-9fc0-7606e5dd33d7
+		summarizeBy: none
+		sourceColumn: Year Month Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: string
+		lineageTag: d33d6c8b-19c1-4e53-8a9a-f9cef24bacb8
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Short'
+		dataType: string
+		lineageTag: e2dc131a-4f13-4e92-adcb-9f552dfa750d
+		summarizeBy: none
+		sourceColumn: Month Short
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 1e896afc-6c17-4c4e-8501-237717548ce0
+		summarizeBy: none
+		sourceColumn: Month Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day of Week'
+		dataType: string
+		lineageTag: c1939f03-1c2c-4c34-bfce-a11f0f59dcda
+		summarizeBy: none
+		sourceColumn: Day of Week
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day of Week Short'
+		dataType: string
+		lineageTag: af291c0a-c6c3-4aac-b31f-6ac07206dab1
+		summarizeBy: none
+		sourceColumn: Day of Week Short
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day of Week Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 76010f65-273e-4486-8225-049939df04cd
+		summarizeBy: none
+		sourceColumn: Day of Week Number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Working Day'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 6a5c7fa1-10d8-4fd9-b71d-1ead77d8c465
+		summarizeBy: none
+		sourceColumn: Working Day
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Working Day Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: ec2f9c46-d6bf-4339-91f6-ef41a93f249e
+		summarizeBy: none
+		sourceColumn: Working Day Number
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Date = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("aznpsql02.database.windows.net", "dbContosoV210M"),
+				    dbo_Date = Source{[Schema="dbo",Item="Date"]}[Data],
+				    #"Filtered Rows" = Table.SelectRows(dbo_Date, each ([Year Quarter] = "Q1-2015"))
+				in
+				    #"Filtered Rows"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

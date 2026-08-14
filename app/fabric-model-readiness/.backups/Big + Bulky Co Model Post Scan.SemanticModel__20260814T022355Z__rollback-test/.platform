@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Big + Bulky Co Model Post Scan"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "d04c5028-0fff-4c18-9e7f-b5bf943cf473"
+  }
+}

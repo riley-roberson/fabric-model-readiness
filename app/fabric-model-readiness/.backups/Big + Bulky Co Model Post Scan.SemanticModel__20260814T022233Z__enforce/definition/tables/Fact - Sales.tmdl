@@ -1,0 +1,185 @@
+table 'Fact - Sales'
+	lineageTag: a0755d97-48bf-443e-983f-1162953d4b50
+
+	column 'Order Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9baf8723-1f28-4408-8736-b538472ce0ad
+		summarizeBy: sum
+		sourceColumn: Order Number
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Line Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: bb360711-8e5a-48a1-a0a5-1ca90776dbd9
+		summarizeBy: sum
+		sourceColumn: Line Number
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order Date'
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 1ee3d53d-02bd-4b28-97bb-119eaf2b57e8
+		summarizeBy: none
+		sourceColumn: Order Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Delivery Date'
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: c0bbd4ee-28e4-4b3f-bb13-3dbbd43d1749
+		summarizeBy: none
+		sourceColumn: Delivery Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column CustomerKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ef8679b3-f4ba-4182-8790-a0f00f0a1109
+		summarizeBy: none
+		sourceColumn: CustomerKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column StoreKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7731043b-feda-411e-96ba-3bf03d8cc93e
+		summarizeBy: none
+		sourceColumn: StoreKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5aca2cba-1d53-436e-a2f8-22350bd18251
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantity
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 817fe6cf-889a-49dd-9011-d2e26e1cec6e
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Unit Price'
+		dataType: decimal
+		isHidden
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 01388591-ca2d-475b-a4ce-edec42ec5b62
+		summarizeBy: sum
+		sourceColumn: Unit Price
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column 'Net Price'
+		dataType: decimal
+		isHidden
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 3baf3df8-7a67-48eb-be10-a2448ac5b8ec
+		summarizeBy: sum
+		sourceColumn: Net Price
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column 'Unit Cost'
+		dataType: decimal
+		isHidden
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 0faa8adf-cc49-4230-bf47-82d519952c54
+		summarizeBy: sum
+		sourceColumn: Unit Cost
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column 'Currency Code'
+		dataType: string
+		isHidden
+		lineageTag: 58a1f5bc-b806-486d-a4f8-e610ea938d4f
+		summarizeBy: none
+		sourceColumn: Currency Code
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Exchange Rate'
+		dataType: double
+		isHidden
+		lineageTag: 38ab5488-9af7-4249-ba9c-4141bc5623e8
+		summarizeBy: sum
+		sourceColumn: Exchange Rate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Fact - Sales' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("aznpsql02.database.windows.net", "dbContosoV210M"),
+				    dbo_Sales = Source{[Schema="dbo",Item="Sales"]}[Data],
+				    #"Filtered Rows" = Table.SelectRows(dbo_Sales, each true)
+				in
+				    #"Filtered Rows"
+
+	changedProperty = Name
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

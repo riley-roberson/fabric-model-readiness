@@ -8,6 +8,7 @@ import { ResultsSummary } from "@/components/ResultsSummary";
 import { HistoryView } from "@/components/HistoryView";
 import { NavBar } from "@/components/NavBar";
 import { SidekickView } from "@/components/sidekick/SidekickView";
+import { DataAgentView } from "@/components/dataagent/DataAgentView";
 import { StandardsDrawer } from "@/components/StandardsDrawer";
 import { useScan } from "@/hooks/useScan";
 import { useDecisions } from "@/hooks/useDecisions";
@@ -82,8 +83,8 @@ export default function App() {
           </svg>
         </div>
         <div>
-          <h1 className="text-lg font-bold text-white leading-tight">Fabric Model AI Readiness</h1>
-          <p className="text-xs text-slate-500">Semantic model analyzer for Copilot preparation</p>
+          <h1 className="text-lg font-bold text-white leading-tight">Modeling Studio</h1>
+          <p className="text-xs text-slate-500">Semantic models and data agents for Microsoft Fabric</p>
         </div>
         <div className="ml-auto flex items-center gap-3">
           <span className="text-xs text-slate-700">v0.1.0</span>
@@ -158,6 +159,13 @@ export default function App() {
           <SidekickView
             suggestedPath={modelPath || undefined}
             onPickFolder={async () => (await window.electronAPI?.selectFolder()) ?? null}
+          />
+        )}
+
+        {screen === "dataagent" && (
+          <DataAgentView
+            modelPath={modelPath}
+            onPickModel={async () => (await window.electronAPI?.selectFolder()) ?? null}
           />
         )}
       </main>

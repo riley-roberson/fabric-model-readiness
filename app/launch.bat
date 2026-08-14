@@ -1,10 +1,10 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
-title Fabric Model AI Readiness - Launcher
+title Modeling Studio - Launcher
 cd /d "%~dp0"
 
 echo ===============================================
-echo   Fabric Model AI Readiness
+echo   Modeling Studio
 echo ===============================================
 echo.
 

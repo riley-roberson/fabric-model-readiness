@@ -99,4 +99,4 @@ export interface ModelHistory {
   sessions: HistorySession[];
 }
 
-export type AppScreen = "drop" | "scanning" | "results" | "applied" | "history" | "sidekick";
+export type AppScreen = "drop" | "scanning" | "results" | "applied" | "history" | "sidekick" | "dataagent";

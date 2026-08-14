@@ -1,0 +1,24 @@
+table '⌂ Local Measures'
+	lineageTag: 03bef03e-e530-44dd-b5f4-b20f087bce78
+
+	measure 'Read Me' =
+			
+			"Use this folder to store local report measures.
+			Please note that local measures are only available for the individual report. Designers can request from Data Services to add local measures to the semantic model key measures to reuse them across other reports and share with other designers."
+		lineageTag: ac459fb0-f8ae-4b34-8698-062475c8abaf
+
+	column 'Local Measures:'
+		formatString: 0
+		lineageTag: 45f2ddfc-ef60-424d-b66e-f3b70ab997d7
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Local Measures:]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition '⌂ Local Measures' = calculated
+		mode: import
+		source = ROW("Local Measures:",  1)
+
+	annotation PBI_Id = 335bf8b30ed849b8ac7647d295896f12
+

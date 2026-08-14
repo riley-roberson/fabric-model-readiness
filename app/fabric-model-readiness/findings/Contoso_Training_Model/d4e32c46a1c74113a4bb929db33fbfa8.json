@@ -1,0 +1,215 @@
+{
+  "scan_id": "d4e32c46a1c74113a4bb929db33fbfa8",
+  "model_path": "C:\\Users\\RRoberson\\OneDrive - MSNPath\\Documents\\AI Engineering\\Example Semantic Model Build\\Contoso Training Model.SemanticModel",
+  "timestamp": "2026-08-14T01:13:52.374513Z",
+  "format": "TMDL",
+  "profile": "both",
+  "summary": {
+    "critical": 5,
+    "high": 6,
+    "medium": 7,
+    "low": 0,
+    "info": 0,
+    "score": 12.7
+  },
+  "findings": [
+    {
+      "id": "f-53ba1e",
+      "category": "schema_design",
+      "check": "cross_table_disambiguation",
+      "severity": "medium",
+      "object": "Ordinal",
+      "object_type": "column",
+      "message": "Column 'Ordinal' appears in tables: _Regional Intelligence, _Time Intelligence. Disambiguate to avoid Copilot confusion.",
+      "recommendation": "",
+      "auto_fixable": false
+    },
+    {
+      "id": "f-65c601",
+      "category": "metadata_completeness",
+      "check": "table_descriptions",
+      "severity": "critical",
+      "object": "_Regional Intelligence",
+      "object_type": "table",
+      "message": "Table '_Regional Intelligence' has no description. Copilot uses the first 200 characters of table descriptions to understand purpose.",
+      "recommendation": "",
+      "auto_fixable": true
+    },
+    {
+      "id": "f-4d7ba5",
+      "category": "metadata_completeness",
+      "check": "column_descriptions",
+      "severity": "high",
+      "object": "_Regional Intelligence.Regions",
+      "object_type": "column",
+      "message": "Column 'Regions' in '_Regional Intelligence' has no description.",
+      "recommendation": "",
+      "auto_fixable": true
+    },
+    {
+      "id": "f-afba43",
+      "category": "metadata_completeness",
+      "check": "data_categories",
+      "severity": "medium",
+      "object": "_Regional Intelligence.Regions",
+      "object_type": "column",
+      "message": "Column 'Regions' looks like a geography field but has no Data Category set.",
+      "recommendation": "",
+      "auto_fixable": true
+    },
+    {
+      "id": "f-233ad6",
+      "category": "metadata_completeness",
+      "check": "synonyms",
+      "severity": "medium",
+      "object": "_Regional Intelligence.Regions",
+      "object_type": "column",
+      "message": "Column 'Regions' in '_Regional Intelligence' has no synonyms for natural language matching.",
+      "recommendation": "",
+      "auto_fixable": true
+    },
+    {
+      "id": "f-119fd9",
+      "category": "metadata_completeness",
+      "check": "column_descriptions",
+      "severity": "high",
+      "object": "_Regional Intelligence.Ordinal",
+      "object_type": "column",
+      "message": "Column 'Ordinal' in '_Regional Intelligence' has no description.",
+      "recommendation": "",
+      "auto_fixable": true
+    },
+    {
+      "id": "f-6ae00b",
+      "category": "metadata_completeness",
+      "check": "synonyms",
+      "severity": "medium",
+      "object": "_Regional Intelligence.Ordinal",
+      "object_type": "column",
+      "message": "Column 'Ordinal' in '_Regional Intelligence' has no synonyms for natural language matching.",
+      "recommendation": "",
+      "auto_fixable": true
+    },
+    {
+      "id": "f-515284",
+      "category": "metadata_completeness",
+      "check": "table_descriptions",
+      "severity": "critical",
+      "object": "_Time Intelligence",
+      "object_type": "table",
+      "message": "Table '_Time Intelligence' has no description. Copilot uses the first 200 characters of table descriptions to understand purpose.",
+      "recommendation": "",
+      "auto_fixable": true
+    },
+    {
+      "id": "f-d806c0",
+      "category": "metadata_completeness",
+      "check": "column_descriptions",
+      "severity": "high",
+      "object": "_Time Intelligence.Time Calculation",
+      "object_type": "column",
+      "message": "Column 'Time Calculation' in '_Time Intelligence' has no description.",
+      "recommendation": "",
+      "auto_fixable": true
+    },
+    {
+      "id": "f-d2ae9a",
+      "category": "metadata_completeness",
+      "check": "synonyms",
+      "severity": "medium",
+      "object": "_Time Intelligence.Time Calculation",
+      "object_type": "column",
+      "message": "Column 'Time Calculation' in '_Time Intelligence' has no synonyms for natural language matching.",
+      "recommendation": "",
+      "auto_fixable": true
+    },
+    {
+      "id": "f-705469",
+      "category": "metadata_completeness",
+      "check": "column_descriptions",
+      "severity": "high",
+      "object": "_Time Intelligence.Ordinal",
+      "object_type": "column",
+      "message": "Column 'Ordinal' in '_Time Intelligence' has no description.",
+      "recommendation": "",
+      "auto_fixable": true
+    },
+    {
+      "id": "f-422a43",
+      "category": "metadata_completeness",
+      "check": "synonyms",
+      "severity": "medium",
+      "object": "_Time Intelligence.Ordinal",
+      "object_type": "column",
+      "message": "Column 'Ordinal' in '_Time Intelligence' has no synonyms for natural language matching.",
+      "recommendation": "",
+      "auto_fixable": true
+    },
+    {
+      "id": "f-6ffcf7",
+      "category": "relationships",
+      "check": "missing_relationships",
+      "severity": "critical",
+      "object": "_Regional Intelligence",
+      "object_type": "table",
+      "message": "Table '_Regional Intelligence' has no relationships. Copilot cannot traverse disconnected tables.",
+      "recommendation": "",
+      "auto_fixable": false
+    },
+    {
+      "id": "f-bfced0",
+      "category": "relationships",
+      "check": "missing_relationships",
+      "severity": "critical",
+      "object": "_Time Intelligence",
+      "object_type": "table",
+      "message": "Table '_Time Intelligence' has no relationships. Copilot cannot traverse disconnected tables.",
+      "recommendation": "",
+      "auto_fixable": false
+    },
+    {
+      "id": "f-44292f",
+      "category": "ai_preparation",
+      "check": "ai_schema_configured",
+      "severity": "critical",
+      "object": "Copilot/schema.json",
+      "object_type": "copilot_schema",
+      "message": "AI schema (Copilot/schema.json) is missing entirely. Copilot needs this to know which fields to use.",
+      "recommendation": "",
+      "auto_fixable": false
+    },
+    {
+      "id": "f-25517f",
+      "category": "ai_preparation",
+      "check": "ai_instructions_present",
+      "severity": "high",
+      "object": "Copilot/Instructions/instructions.md",
+      "object_type": "copilot_instructions",
+      "message": "AI instructions file is missing. Add business context, terminology, and metric preferences.",
+      "recommendation": "",
+      "auto_fixable": true
+    },
+    {
+      "id": "f-96c7f1",
+      "category": "ai_preparation",
+      "check": "verified_answers",
+      "severity": "medium",
+      "object": "Copilot/VerifiedAnswers/",
+      "object_type": "verified_answer",
+      "message": "No verified answers found. Add at least a few verified answers for common business questions.",
+      "recommendation": "",
+      "auto_fixable": false
+    },
+    {
+      "id": "f-a0ed4e",
+      "category": "org_standards",
+      "check": "rls_roles_defined",
+      "severity": "high",
+      "object": "model",
+      "object_type": "model",
+      "message": "No RLS roles defined. Per org standard (Security and Sharing): define at least Admin and General roles.",
+      "recommendation": "Create an Admin role (no filters) and a General role (all filters applied).",
+      "auto_fixable": false
+    }
+  ]
+}

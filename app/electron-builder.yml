@@ -1,5 +1,5 @@
 appId: com.fabricmodel.readiness
-productName: Fabric Model AI Readiness
+productName: Modeling Studio
 copyright: Copyright 2025
 
 directories:
@@ -28,4 +28,4 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: Fabric Model AI Readiness
+  shortcutName: Modeling Studio

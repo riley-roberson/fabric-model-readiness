@@ -1,0 +1,16 @@
+relationship AutoDetected_e2e4cea9-d624-4952-a78d-bc82c13942c0
+	fromColumn: 'Fact - Sales'.CustomerKey
+	toColumn: Customer.CustomerKey
+
+relationship AutoDetected_db6a08f8-3d10-4949-ba76-18ed7cd1c9c0
+	fromColumn: 'Fact - Sales'.ProductKey
+	toColumn: Product.ProductKey
+
+relationship AutoDetected_26e9b4c2-655b-4139-bde3-a6f24f97038b
+	fromColumn: 'Fact - Sales'.StoreKey
+	toColumn: Store.StoreKey
+
+relationship 161edca8-0884-a2a3-f88f-ebac6d089c6c
+	fromColumn: 'Fact - Sales'.'Delivery Date'
+	toColumn: Date.Date
+

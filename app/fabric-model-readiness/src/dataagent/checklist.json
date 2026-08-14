@@ -1,0 +1,107 @@
+{
+  "source": "Semantic Model Preparation Checklist for Fabric Data Agent",
+  "source_url": "https://learn.microsoft.com/en-us/fabric/data-science/data-agent-semantic-model",
+  "note": "The 18 items from the checklist that concern the agent rather than the model. These were excluded from the Analyzer's score because they are not observable in a .SemanticModel folder. Items with a `check` are now verified automatically when the agent's configuration is known.",
+  "sections": [
+    {
+      "id": "configuration",
+      "title": "Data Agent Configuration",
+      "items": [
+        {
+          "id": "da_tables_match_schema",
+          "text": "Select the same tables in Data Agent that are defined in Prep for AI > AI Data Schema",
+          "emphasis": "important",
+          "check": "agent_tables_match_ai_schema",
+          "why": "Tables the agent can query but the schema does not describe produce unreliable answers. Tables the schema describes but the agent cannot reach are simply unused."
+        },
+        {
+          "id": "da_test_before_instructions",
+          "text": "Test and validate responses before adding AI instructions",
+          "why": "Instructions written before you have seen the failures tend to fix problems the agent did not have."
+        },
+        {
+          "id": "da_instructions_cross_source_only",
+          "text": "Add Data Agent instructions only for guidance that applies across ALL data sources",
+          "check": "agent_instructions_not_model_specific"
+        },
+        {
+          "id": "da_routing_instructions",
+          "text": "Add routing instructions when there are multiple semantic models, or a semantic model plus another source type",
+          "example": "For revenue questions use the semantic model; for real-time delivery performance use the XYZ table from the KQL database."
+        },
+        {
+          "id": "da_instructions_scope",
+          "text": "Limit Data Agent instructions to response formatting, cross-source routing, common abbreviations, and tone",
+          "check": "agent_instructions_length"
+        },
+        {
+          "id": "da_no_model_specific",
+          "text": "Do NOT add semantic-model-specific instructions at Data Agent level",
+          "emphasis": "warning",
+          "check": "agent_instructions_not_model_specific",
+          "why": "Agent-level guidance applies to every source the agent can reach, so one model's internals leak into all of them."
+        }
+      ]
+    },
+    {
+      "id": "testing",
+      "title": "Testing and Validation",
+      "items": [
+        {
+          "id": "da_test_for_gaps",
+          "text": "Test responses before adding AI instructions to identify gaps"
+        },
+        {
+          "id": "da_review_dax",
+          "text": "Review the DAX query in each response to verify accuracy and pattern",
+          "why": "The agent shows the query it generated. A right answer from wrong DAX will not stay right."
+        },
+        {
+          "id": "da_diagnose_layer",
+          "text": "When results are wrong, identify which layer needs adjustment: AI data schema, verified answers, or AI instructions"
+        },
+        {
+          "id": "da_performance",
+          "text": "If responses are slow, analyse DAX performance and keep AI instructions concise"
+        },
+        {
+          "id": "da_test_in_schema_fields",
+          "text": "Test with fields inside the AI data schema, which should return answers"
+        },
+        {
+          "id": "da_verify_triggers",
+          "text": "Verify that trigger questions return the correct verified answers"
+        },
+        {
+          "id": "da_sdk_evaluation",
+          "text": "Use the Fabric Data Agent Python SDK for automated evaluation against ground truth",
+          "doc_url": "https://learn.microsoft.com/en-us/fabric/data-science/fabric-data-agent-sdk"
+        },
+        {
+          "id": "da_diagnostics_logs",
+          "text": "Download and review the diagnostics logs when debugging",
+          "doc_url": "https://learn.microsoft.com/en-us/fabric/data-science/evaluate-data-agent#diagnostics-button"
+        },
+        {
+          "id": "da_iterate",
+          "text": "Iterate on the configuration based on validation findings"
+        },
+        {
+          "id": "da_lifecycle",
+          "text": "Use Git and deployment pipelines for Data Agent lifecycle management",
+          "check": "agent_lifecycle_managed"
+        },
+        {
+          "id": "da_description",
+          "text": "Add a Data Agent description before publishing",
+          "check": "agent_description_present"
+        },
+        {
+          "id": "da_m365_publishing",
+          "text": "Add publishing instructions if the Data Agent is used in Microsoft 365 Copilot",
+          "doc_url": "https://learn.microsoft.com/en-us/fabric/data-science/data-agent-microsoft-365-copilot#control-how-microsoft-365-copilot-handles-the-output-from-fabric-data-agent"
+        }
+      ]
+    }
+  ]
+}

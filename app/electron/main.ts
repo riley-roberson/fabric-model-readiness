@@ -15,7 +15,7 @@ function createWindow(backendPort: number) {
     height: 540,
     minWidth: 600,
     minHeight: 400,
-    title: "Fabric Model AI Readiness",
+    title: "Modeling Studio",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,

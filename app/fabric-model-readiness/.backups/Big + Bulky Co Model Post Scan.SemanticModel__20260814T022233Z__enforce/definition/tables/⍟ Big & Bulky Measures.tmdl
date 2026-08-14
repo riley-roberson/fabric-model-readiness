@@ -1,0 +1,40 @@
+table '⍟ Big & Bulky Measures'
+	lineageTag: 46cbf1a6-c771-4b31-addd-0298c1713a66
+
+	measure 'Gross Margin' = [Total Revenue] - [Total Cost]
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: f7c9d111-c665-4e65-9fee-9b49f50171f0
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Total Revenue' = SUMX('Fact - Sales','Fact - Sales'[Unit Price] * 'Fact - Sales'[Quantity])
+		formatString: \$#,0;(\$#,0);\$#,0
+		lineageTag: a2e715f5-f77d-4cfb-8de4-465d2a51ee5c
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Total Cost' = SUM('Fact - Sales'[Unit Cost])
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 1974a554-9ea1-4c85-a844-6398787de277
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Total Sales' = COUNT('Fact - Sales'[Order Number])
+		formatString: #,0
+		lineageTag: 82be7041-b8b0-4921-9f34-78433eb9beeb
+
+	column 'Global Measures:'
+		formatString: 0
+		lineageTag: 630ca948-7756-422f-b595-a09c0b324e79
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Global Measures:]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition '⍟ Big & Bulky Measures' = calculated
+		mode: import
+		source = ROW("Global Measures:", 1)
+
+	annotation PBI_Id = faf58528cbc14073b79e6ec3ad3c8792
+

@@ -17,7 +17,7 @@ from historian.logger import record_session
 from scout import parser
 from scout.report import load_latest_report
 from scout.rules import run_all_checks
-from scout.scorer import compute_summary
+from scout.scorer import compute_summary, estimate_totals_by_category
 from shared.model import ChangeDecision, ChangeRecord, Disposition
 
 router = APIRouter(prefix="/api", tags=["enforcer"])
@@ -64,7 +64,7 @@ class PreviewResponse(BaseModel):
 
 @router.post("/apply")
 async def apply_decisions(request: ApplyRequest) -> ApplyResponse:
-    """Record all decisions via Historian. Changes are applied via Claude Code + MCP."""
+    """Record every decision, then write the accepted ones to the model."""
     # Load the scan report
     report = load_latest_report(request.model_name)
     if report is None:
@@ -172,7 +172,7 @@ async def apply_decisions(request: ApplyRequest) -> ApplyResponse:
         try:
             rescanned = parser.parse(Path(report.model_path))
             findings = run_all_checks(rescanned)
-            new_score = compute_summary(findings, len(findings)).score
+            new_score = compute_summary(findings, estimate_totals_by_category(findings)).score
         except Exception:
             new_score = None  # a failed re-scan must not fail the apply
 

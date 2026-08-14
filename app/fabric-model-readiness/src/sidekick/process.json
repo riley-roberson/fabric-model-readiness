@@ -1,0 +1,514 @@
+{
+  "source_document": "Semantic Model Development Process.docx",
+  "doc_revision": "2026-06-17",
+  "note": "Steps with source 'doc' come straight from the process document and must round-trip against it. Steps with source 'proposed' do not exist in the document yet and need the doc owner's ratification before they are treated as org process.",
+  "stages": [
+    {
+      "id": "project_launch",
+      "phase": "Project Launch",
+      "title": "Project Launch",
+      "steps": [
+        {
+          "id": "assign_roles",
+          "source": "doc",
+          "text": "Assign roles for the project",
+          "detail": "Data Modeler, Data Engineer, Data or Business Analyst, Data Steward or SME, and Stakeholder.",
+          "evidence": "manual"
+        },
+        {
+          "id": "setup_design_documents",
+          "source": "doc",
+          "text": "Set up design documents from the templates",
+          "evidence": "artifact",
+          "artifacts": ["TEMPLATE - BEAM Event Table.xlsx", "EDW Bus Matrix.xlsx"]
+        },
+        {
+          "id": "request_existing_artifacts",
+          "source": "doc",
+          "text": "Request existing artifacts, if any are available",
+          "evidence": "manual"
+        },
+        {
+          "id": "determine_mvp",
+          "source": "doc",
+          "text": "Determine the minimally viable product",
+          "detail": "Usually one or two Power BI reports demonstrating accurate data and measures with simple visuals. Non-production test reports.",
+          "evidence": "manual"
+        },
+        {
+          "id": "conduct_kickoff",
+          "source": "doc",
+          "text": "Conduct the project kick-off",
+          "detail": "Define scope around a single business event using the BEAM template, agree the MVP, and estimate level of effort and timeframe (Small 1-2 months, Medium 3-4, Large 6-9).",
+          "evidence": "manual"
+        }
+      ],
+      "gate": {
+        "id": "gate_scope",
+        "text": "Stakeholder acceptance of project scope and MVP",
+        "source": "doc",
+        "requires": ["assign_roles", "determine_mvp", "conduct_kickoff"]
+      }
+    },
+    {
+      "id": "requirements_design",
+      "phase": "Requirements and Design",
+      "title": "Requirements and Design",
+      "steps": [
+        {
+          "id": "conduct_interviews",
+          "source": "doc",
+          "text": "Interview business users and subject matter experts",
+          "detail": "The BEAM interview outline covers modelstorming, the W questions in order, and grain.",
+          "evidence": "artifact",
+          "artifacts": ["BEAM Interview Outline.docx"]
+        },
+        {
+          "id": "profile_source_data",
+          "source": "doc",
+          "text": "Profile the identified source and raw tables",
+          "evidence": "manual"
+        },
+        {
+          "id": "identify_historical_requirements",
+          "source": "doc",
+          "text": "Identify historical data requirements",
+          "detail": "Which dimensions need slowly changing history, and to what depth.",
+          "evidence": "manual"
+        },
+        {
+          "id": "identify_security_requirements",
+          "source": "doc",
+          "text": "Identify security requirements (CLS and RLS)",
+          "evidence": "manual"
+        },
+        {
+          "id": "request_source_erd",
+          "source": "doc",
+          "text": "Request the source system ERD or data objects, if applicable",
+          "evidence": "manual"
+        },
+        {
+          "id": "create_conceptual_erd",
+          "source": "doc",
+          "text": "Create the conceptual and logical ERD for the target dimensional model",
+          "evidence": "manual"
+        },
+        {
+          "id": "update_bus_matrix",
+          "source": "doc",
+          "text": "Review and update the data warehouse bus matrix",
+          "evidence": "artifact",
+          "artifacts": ["EDW Bus Matrix.xlsx"]
+        }
+      ],
+      "gate": {
+        "id": "gate_star_schema",
+        "text": "Stakeholder acceptance of the star schema design",
+        "source": "doc",
+        "requires": ["conduct_interviews", "create_conceptual_erd", "update_bus_matrix"]
+      }
+    },
+    {
+      "id": "bronze",
+      "phase": "Build Semantic Model",
+      "title": "Imports and Setup (bronze / stage layer)",
+      "steps": [
+        {
+          "id": "review_etl_standards",
+          "source": "doc",
+          "text": "Review the ETL Standards and Guidelines document",
+          "evidence": "manual"
+        },
+        {
+          "id": "record_source_size",
+          "source": "doc",
+          "text": "Record the size of each data source",
+          "detail": "Number of tables, and number of rows per table.",
+          "evidence": "manual"
+        },
+        {
+          "id": "establish_connections",
+          "source": "doc",
+          "text": "Establish connections to the data sources",
+          "detail": "Skip if reusing existing connections.",
+          "evidence": "manual"
+        },
+        {
+          "id": "determine_ingestion_pattern",
+          "source": "doc",
+          "text": "Determine the data ingestion pattern",
+          "detail": "Daily snapshots, insert/update, CDC, or streaming.",
+          "evidence": "manual"
+        },
+        {
+          "id": "determine_refresh_rate",
+          "source": "doc",
+          "text": "Determine the data refresh rate",
+          "detail": "Real-time, daily, weekly, or monthly.",
+          "evidence": "manual"
+        },
+        {
+          "id": "develop_pipelines",
+          "source": "doc",
+          "text": "Develop pipelines or dataflows to extract and load raw data",
+          "evidence": "manual"
+        },
+        {
+          "id": "apply_zstage_naming",
+          "source": "doc",
+          "text": "Apply the stage layer naming convention",
+          "detail": "Prefix tables with 'zstage', follow source system naming as closely as possible, and use the source system as the schema (workday, virtuous, gapp).",
+          "evidence": "naming",
+          "layer": "zstage"
+        }
+      ]
+    },
+    {
+      "id": "silver",
+      "phase": "Build Semantic Model",
+      "title": "Integration and Cleansing (silver / base layer)",
+      "steps": [
+        {
+          "id": "create_insert_procedure",
+          "source": "doc",
+          "text": "Create the stored procedure to insert data into the appropriate data marts",
+          "evidence": "manual"
+        },
+        {
+          "id": "compare_data_profiles",
+          "source": "doc",
+          "text": "Compare profiled values against business expectations for QA",
+          "evidence": "manual"
+        },
+        {
+          "id": "create_qa_tests",
+          "source": "doc",
+          "text": "Create QA tests and validate data types",
+          "detail": "SSNs, postal codes, phone numbers, numeric values.",
+          "evidence": "manual"
+        },
+        {
+          "id": "enrich_data",
+          "source": "doc",
+          "text": "Enrich the data",
+          "detail": "Translate IDs, codes, and Booleans into business-readable values.",
+          "evidence": "manual"
+        },
+        {
+          "id": "integrate_sources",
+          "source": "doc",
+          "text": "Integrate data across sources, if applicable",
+          "evidence": "manual",
+          "optional_when": "size == small"
+        },
+        {
+          "id": "resolve_duplicates_mdm",
+          "source": "doc",
+          "text": "Use MDM to merge and resolve duplicate records",
+          "evidence": "manual",
+          "optional_when": "size == small"
+        },
+        {
+          "id": "join_base_tables",
+          "source": "doc",
+          "text": "Join tables with related attributes into denormalized base tables",
+          "evidence": "manual"
+        },
+        {
+          "id": "apply_base_naming",
+          "source": "doc",
+          "text": "Apply the base layer naming convention",
+          "detail": "Prefix tables with 'base' and use a business term for the schema (HR, Logistics, Finance, Mobi, Advancement, Campaigns).",
+          "evidence": "naming",
+          "layer": "base"
+        }
+      ]
+    },
+    {
+      "id": "gold",
+      "phase": "Build Semantic Model",
+      "title": "Dimensional Model (gold / star schema layer)",
+      "steps": [
+        {
+          "id": "refer_beam_and_erd",
+          "source": "doc",
+          "text": "Refer to the BEAM tables and conceptual ERD for the star schema design",
+          "evidence": "manual"
+        },
+        {
+          "id": "identify_conformed_dimensions",
+          "source": "doc",
+          "text": "Use the bus matrix to identify conforming dimensions",
+          "evidence": "manual"
+        },
+        {
+          "id": "build_dimensions",
+          "source": "doc",
+          "text": "Build dimension tables and add surrogate keys",
+          "detail": "Use appropriate window functions, for example dense_rank() or identity().",
+          "evidence": "manual"
+        },
+        {
+          "id": "build_facts",
+          "source": "doc",
+          "text": "Build fact tables from the dimension tables using surrogate keys",
+          "evidence": "manual"
+        },
+        {
+          "id": "apply_fact_dim_naming",
+          "source": "doc",
+          "text": "Apply the star schema naming convention",
+          "detail": "Prefix tables with 'fact' or 'dim' and use a business term for the schema.",
+          "evidence": "naming",
+          "layer": "factdim"
+        }
+      ]
+    },
+    {
+      "id": "pbi_development",
+      "phase": "Build Semantic Model",
+      "title": "Semantic Model Development in Power BI",
+      "steps": [
+        {
+          "id": "create_from_template",
+          "source": "doc",
+          "text": "Create the new Power BI model from the .pbit template",
+          "evidence": "artifact",
+          "artifacts": ["TEMPLATE - Semantic Model DW & Fabric.pbit", "TEMPLATE - Semantic Model Fabric.pbit"]
+        },
+        {
+          "id": "import_dimensional_tables",
+          "source": "doc",
+          "text": "Import the dimensional model tables into the .pbix",
+          "evidence": "derived",
+          "derived": "has_tables"
+        },
+        {
+          "id": "apply_powerbi_standards",
+          "source": "doc",
+          "text": "Prepare the model per the Power BI Standards document",
+          "detail": "Mark key columns, create relationships, turn off default aggregations, clean up data formats, create display folders.",
+          "evidence": "lint",
+          "checks": [
+            "default_summarization",
+            "column_display_folders",
+            "measure_display_folders",
+            "date_table_marked",
+            "surrogate_key_hidden",
+            "fact_table_hidden",
+            "incorrect_data_types"
+          ]
+        },
+        {
+          "id": "create_measures_and_calc_groups",
+          "source": "doc",
+          "text": "Create measures and calculation groups",
+          "evidence": "derived",
+          "derived": "has_measures"
+        },
+        {
+          "id": "test_dax_performance",
+          "source": "doc",
+          "text": "Run initial tests and improve DAX performance",
+          "evidence": "lint",
+          "checks": ["nested_if", "iferror_usage", "use_divide_function", "shortened_calculate", "fully_qualified_columns"]
+        },
+        {
+          "id": "review_data_classification",
+          "source": "doc",
+          "text": "Review data classification for the fact and dimension tables",
+          "evidence": "lint",
+          "checks": ["data_categories"]
+        },
+        {
+          "id": "setup_security_roles",
+          "source": "doc",
+          "text": "Set up security roles for CLS and RLS, and create or update AAD groups",
+          "evidence": "lint",
+          "checks": ["rls_roles_defined", "rls_admin_role", "rls_general_role"]
+        },
+        {
+          "id": "publish_to_test_workspace",
+          "source": "doc",
+          "text": "Publish to the testing workspace in the Service",
+          "evidence": "external"
+        }
+      ]
+    },
+    {
+      "id": "ai_readiness",
+      "phase": "Build Semantic Model",
+      "title": "AI Readiness (Prep for AI)",
+      "proposed": true,
+      "proposal_note": "The process document has no Prep for AI step, so the 20 Data Agent checks have nowhere to attach. This stage is a proposal for the document owner, not ratified org process.",
+      "steps": [
+        {
+          "id": "document_the_model",
+          "source": "proposed",
+          "text": "Write descriptions for every table, column, and measure",
+          "detail": "Data Agent reads the first 200 characters of a description to decide what an object is for.",
+          "evidence": "lint",
+          "checks": ["table_descriptions", "column_descriptions", "measure_descriptions", "row_label_defined", "synonyms"]
+        },
+        {
+          "id": "configure_ai_schema",
+          "source": "proposed",
+          "text": "Configure Prep for AI > Simplify data schema",
+          "detail": "Select only the tables, columns, and measures the agent needs. Selecting everything defeats the purpose.",
+          "evidence": "lint",
+          "checks": ["ai_schema_configured", "ai_schema_scope", "ai_schema_dependencies", "ai_schema_helper_objects", "ai_schema_duplicate_measures", "noise_fields_excluded"]
+        },
+        {
+          "id": "author_ai_instructions",
+          "source": "proposed",
+          "text": "Write the AI instructions",
+          "detail": "Business terminology, fiscal periods, preferred measures per question type, and how to use calculation groups or field parameters.",
+          "evidence": "lint",
+          "checks": ["ai_instructions_present", "ai_instructions_conciseness", "ai_instructions_terminology", "ai_instructions_time_periods", "ai_instructions_metric_preferences", "ai_instructions_ambiguous_dates", "ai_instructions_groupings", "ai_instructions_dax_examples", "ai_instructions_advanced_objects"]
+        },
+        {
+          "id": "create_verified_answers",
+          "source": "proposed",
+          "text": "Create verified answers for the most common questions",
+          "detail": "Five to seven complete trigger questions each, plus up to three filters.",
+          "evidence": "lint",
+          "checks": ["verified_answers", "verified_answer_quality", "verified_answer_phrasing", "verified_answer_filters", "hidden_field_conflicts"]
+        }
+      ]
+    },
+    {
+      "id": "uat",
+      "phase": "Pre-Deployment Testing (UAT)",
+      "title": "Pre-Deployment Testing (UAT)",
+      "steps": [
+        {
+          "id": "setup_uat_sheet",
+          "source": "doc",
+          "text": "Set up the UAT sheet from the template to track bugs and fixes",
+          "evidence": "artifact",
+          "artifacts": ["TEMPLATE - Semantic Model UAT.xlsx"]
+        },
+        {
+          "id": "verify_data_accuracy",
+          "source": "doc",
+          "text": "Verify the accuracy of the data and the measures",
+          "evidence": "manual"
+        },
+        {
+          "id": "test_dax_performance_uat",
+          "source": "doc",
+          "text": "Test and improve DAX performance",
+          "evidence": "manual"
+        },
+        {
+          "id": "test_security_roles",
+          "source": "doc",
+          "text": "Test the security roles and access",
+          "evidence": "manual"
+        },
+        {
+          "id": "create_qa_checks",
+          "source": "doc",
+          "text": "Create QA checks in Power BI, if applicable",
+          "evidence": "manual"
+        }
+      ],
+      "gate": {
+        "id": "gate_uat",
+        "text": "Stakeholder acceptance of UAT",
+        "source": "doc",
+        "requires": ["setup_uat_sheet", "verify_data_accuracy", "test_security_roles"]
+      }
+    },
+    {
+      "id": "post_transformation",
+      "phase": "Post Transformation Tasks",
+      "title": "Post Transformation Tasks",
+      "steps": [
+        {
+          "id": "cleanup_dev_test",
+          "source": "doc",
+          "text": "Clean up development and test work",
+          "detail": "Drop test tables and views, review code formatting.",
+          "evidence": "manual"
+        },
+        {
+          "id": "create_build_procedures",
+          "source": "doc",
+          "text": "Create stored procedures to automate the build",
+          "evidence": "manual"
+        },
+        {
+          "id": "update_data_catalog",
+          "source": "doc",
+          "text": "Add or remove tables in the data catalog and data request app",
+          "evidence": "manual"
+        },
+        {
+          "id": "user_documentation_training",
+          "source": "doc",
+          "text": "Develop and deliver user documentation and training",
+          "evidence": "manual"
+        },
+        {
+          "id": "push_to_production",
+          "source": "doc",
+          "text": "Push the semantic model to the production workspace and grant access",
+          "evidence": "external"
+        }
+      ]
+    },
+    {
+      "id": "mvp_reports",
+      "phase": "Report Creation for MVP",
+      "title": "Report Creation for MVP",
+      "steps": [
+        {
+          "id": "determine_deployment_method",
+          "source": "doc",
+          "text": "Determine the deployment method for the reports",
+          "detail": "Workspaces, a Power BI app, an embed link, or export to PDF and Excel.",
+          "evidence": "manual"
+        },
+        {
+          "id": "create_wireframes",
+          "source": "doc",
+          "text": "Create wireframes of the MVP reports",
+          "evidence": "manual"
+        },
+        {
+          "id": "create_reports_with_users",
+          "source": "doc",
+          "text": "Build simple reports with business users and hand off to superusers",
+          "evidence": "manual"
+        }
+      ]
+    },
+    {
+      "id": "closeout",
+      "phase": "Project Closeout",
+      "title": "Project Closeout",
+      "steps": [
+        {
+          "id": "review_against_scope",
+          "source": "doc",
+          "text": "Review the work completed against the scope and MVP agreement",
+          "evidence": "manual"
+        },
+        {
+          "id": "address_parking_lot",
+          "source": "doc",
+          "text": "Address parking lot items and set priority for the backlog queue",
+          "evidence": "manual"
+        }
+      ],
+      "gate": {
+        "id": "gate_closeout",
+        "text": "Stakeholder approval of project closeout",
+        "source": "doc",
+        "requires": ["review_against_scope", "address_parking_lot"]
+      }
+    }
+  ]
+}

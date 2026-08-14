@@ -14,7 +14,7 @@ from sse_starlette.sse import EventSourceResponse
 from scout import parser, report
 from scout.report import sanitize_model_name
 from scout.rules import filter_by_profile, run_all_checks
-from scout.scorer import compute_summary, rating
+from scout.scorer import compute_summary, estimate_totals_by_category, rating
 from shared.model import Profile, ScanReport
 
 router = APIRouter(prefix="/api", tags=["scout"])
@@ -64,13 +64,7 @@ async def scan(request: ScanRequest) -> ScanResponse:
     findings = run_all_checks(model)
     findings = filter_by_profile(findings, active_profile)
 
-    # Compute total checks per category
-    total_checks: dict[str, int] = {}
-    for f in findings:
-        cat = f.category.value
-        total_checks[cat] = total_checks.get(cat, 0) + 1
-    for cat in total_checks:
-        total_checks[cat] = max(total_checks[cat], int(total_checks[cat] / 0.6))
+    total_checks = estimate_totals_by_category(findings)
 
     summary = compute_summary(findings, total_checks)
 
@@ -130,12 +124,7 @@ async def scan_stream(request: ScanRequest) -> EventSourceResponse:
             yield {"event": "progress", "data": json.dumps({"step": "scoring", "percent": 80, "message": f"Scoring {len(findings)} findings..."})}
             await asyncio.sleep(0)
 
-            total_checks: dict[str, int] = {}
-            for f in findings:
-                cat = f.category.value
-                total_checks[cat] = total_checks.get(cat, 0) + 1
-            for cat in total_checks:
-                total_checks[cat] = max(total_checks[cat], int(total_checks[cat] / 0.6))
+            total_checks = estimate_totals_by_category(findings)
 
             summary = compute_summary(findings, total_checks)
 

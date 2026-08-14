@@ -6,6 +6,25 @@ from shared.config import CATEGORY_WEIGHTS, CRITICAL_PENALTY_MULTIPLIER
 from shared.model import Finding, ScanSummary, Severity
 
 
+def estimate_totals_by_category(findings: list[Finding]) -> dict[str, int]:
+    """Estimate how many checks ran per category, from the findings alone.
+
+    The rule engine reports failures, not attempts, so the denominator has to be
+    inferred: assume the observed failures are roughly 60% of the checks that
+    ran in that category. Crude, but it keeps a category with one finding from
+    scoring zero.
+
+    Extracted so the scan route and the post-apply re-scan cannot drift.
+    """
+    totals: dict[str, int] = {}
+    for f in findings:
+        cat = f.category.value
+        totals[cat] = totals.get(cat, 0) + 1
+    for cat in totals:
+        totals[cat] = max(totals[cat], int(totals[cat] / 0.6))
+    return totals
+
+
 def compute_summary(findings: list[Finding], total_checks_by_category: dict[str, int]) -> ScanSummary:
     """Compute severity counts and weighted readiness score.
 

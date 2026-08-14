@@ -25,12 +25,16 @@ export function ApplyButton({ acceptedCount, isApplying, onApply }: ApplyButtonP
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            Applying...
+            Writing to your model...
           </>
         ) : (
-          <>Apply {acceptedCount} Change{acceptedCount !== 1 ? "s" : ""}</>
+          <>Apply {acceptedCount} Change{acceptedCount !== 1 ? "s" : ""} to Model</>
         )}
       </button>
+      {/* This button now edits files on disk, so say so before it is pressed. */}
+      <p className="mt-1.5 text-center text-[11px] text-slate-500">
+        Writes to your .SemanticModel folder. A backup is taken first and restored if anything fails.
+      </p>
     </div>
   );
 }

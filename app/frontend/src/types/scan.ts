@@ -30,12 +30,48 @@ export interface DecisionInput {
   edited_value?: string;
 }
 
+/** A change the enforcer declined to make, and why. */
+export interface UnsupportedChange {
+  finding_id: string;
+  check: string;
+  object: string;
+  reason: string;
+}
+
+export interface FailedChange {
+  finding_id: string;
+  object: string;
+  detail: string;
+}
+
 export interface ApplyResult {
   applied: number;
   deferred: number;
   rejected: number;
+  /** Measured by re-scanning after the write, not projected. */
   new_score: number | null;
   history_path: string;
+  unsupported: UnsupportedChange[];
+  failed: FailedChange[];
+  backup_path: string | null;
+  /** True when the run was reverted -- nothing was kept. */
+  rolled_back: boolean;
+  error: string | null;
+}
+
+/** One property write, as shown in the pre-apply preview. */
+export interface PreviewChange {
+  finding_id: string;
+  check: string;
+  object: string;
+  property: string;
+  before: unknown;
+  after: unknown;
+}
+
+export interface PreviewResult {
+  changes: PreviewChange[];
+  unsupported: UnsupportedChange[];
 }
 
 export interface HistorySession {

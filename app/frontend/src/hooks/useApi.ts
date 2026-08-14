@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react";
-import type { ScanResult, ApplyRequest, ApplyResult } from "@/types/scan";
+import type { ScanResult, ApplyRequest, ApplyResult, PreviewResult } from "@/types/scan";
 import type { EnrichedModelHistory, DeferredItem } from "@/types/history";
 
 function getBackendUrl(): string {
@@ -103,6 +103,28 @@ export function useApi() {
     return res.json();
   }, []);
 
+  /** What would be written, without writing it. */
+  const previewChanges = useCallback(
+    async (req: {
+      scan_id: string;
+      model_name: string;
+      finding_ids: string[];
+      values?: Record<string, string>;
+    }): Promise<PreviewResult> => {
+      const res = await fetch(`${baseUrl.current}/api/apply/preview`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ values: {}, ...req }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: res.statusText }));
+        throw new Error(err.detail || "Preview failed");
+      }
+      return res.json();
+    },
+    []
+  );
+
   const getHistory = useCallback(async (modelName?: string): Promise<EnrichedModelHistory | { models: string[] }> => {
     const url = modelName
       ? `${baseUrl.current}/api/history/${encodeURIComponent(modelName)}`
@@ -133,5 +155,5 @@ export function useApi() {
     }
   }, []);
 
-  return { scan, scanStream, apply, getHistory, getDeferredItems, healthCheck };
+  return { scan, scanStream, apply, previewChanges, getHistory, getDeferredItems, healthCheck };
 }

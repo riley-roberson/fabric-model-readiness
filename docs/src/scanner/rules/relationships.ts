@@ -20,7 +20,7 @@ export function check(model: SemanticModel): Finding[] {
         severity: "critical",
         object: table.name,
         object_type: "table",
-        message: `Table '${table.name}' has no relationships. Copilot cannot traverse disconnected tables.`,
+        message: `Table '${table.name}' has no relationships. Data Agent cannot traverse disconnected tables.`,
       }));
     }
   }

@@ -284,7 +284,7 @@ def check(model: SemanticModel) -> list[Finding]:
                 severity=Severity.MEDIUM,
                 object=name,
                 object_type=ObjectType.COLUMN,
-                message=f"Column '{name}' appears in tables: {', '.join(tables)}. Disambiguate to avoid Copilot confusion.",
+                message=f"Column '{name}' appears in tables: {', '.join(tables)}. Disambiguate so Data Agent is not left choosing between them.",
                 auto_fixable=False,
             ))
 

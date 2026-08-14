@@ -21,7 +21,7 @@ def check(model: SemanticModel) -> list[Finding]:
                 severity=Severity.CRITICAL,
                 object=table.name,
                 object_type=ObjectType.TABLE,
-                message=f"Table '{table.name}' has no description. Copilot uses the first 200 characters of table descriptions to understand purpose.",
+                message=f"Table '{table.name}' has no description. Data Agent uses the first 200 characters of table descriptions to understand purpose.",
                 auto_fixable=True,
             ))
 

@@ -17,7 +17,7 @@ export function check(model: SemanticModel): Finding[] {
         severity: "critical",
         object: table.name,
         object_type: "table",
-        message: `Table '${table.name}' has no description. Copilot uses the first 200 characters of table descriptions to understand purpose.`,
+        message: `Table '${table.name}' has no description. Data Agent uses the first 200 characters of table descriptions to understand purpose.`,
         auto_fixable: true,
       }));
     }

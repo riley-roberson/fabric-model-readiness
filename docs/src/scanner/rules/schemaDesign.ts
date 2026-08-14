@@ -262,7 +262,7 @@ export function check(model: SemanticModel): Finding[] {
         severity: "medium",
         object: name,
         object_type: "column",
-        message: `Column '${name}' appears in tables: ${tables.join(", ")}. Disambiguate to avoid Copilot confusion.`,
+        message: `Column '${name}' appears in tables: ${tables.join(", ")}. Disambiguate so Data Agent is not left choosing between them.`,
       }));
     }
   }

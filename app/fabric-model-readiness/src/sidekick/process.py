@@ -71,6 +71,10 @@ class Stage:
     gate: Gate | None = None
     proposed: bool = False
     proposal_note: str = ""
+    # Advice that belongs at this stage even though it is enforced at a later
+    # one. Descriptions are the motivating case: checking them here would bury
+    # everything else, but writing them here costs a fraction of retrofitting.
+    heads_up: str = ""
 
 
 @dataclass(frozen=True)
@@ -182,6 +186,7 @@ def load_process() -> Process:
             gate=gate,
             proposed=bool(raw_stage.get("proposed", False)),
             proposal_note=raw_stage.get("proposal_note", ""),
+            heads_up=raw_stage.get("heads_up", ""),
         ))
 
     return Process(

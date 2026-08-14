@@ -20,7 +20,10 @@
           "source": "doc",
           "text": "Set up design documents from the templates",
           "evidence": "artifact",
-          "artifacts": ["TEMPLATE - BEAM Event Table.xlsx", "EDW Bus Matrix.xlsx"]
+          "artifacts": [
+            "TEMPLATE - BEAM Event Table.xlsx",
+            "EDW Bus Matrix.xlsx"
+          ]
         },
         {
           "id": "request_existing_artifacts",
@@ -47,7 +50,11 @@
         "id": "gate_scope",
         "text": "Stakeholder acceptance of project scope and MVP",
         "source": "doc",
-        "requires": ["assign_roles", "determine_mvp", "conduct_kickoff"]
+        "requires": [
+          "assign_roles",
+          "determine_mvp",
+          "conduct_kickoff"
+        ]
       }
     },
     {
@@ -61,7 +68,9 @@
           "text": "Interview business users and subject matter experts",
           "detail": "The BEAM interview outline covers modelstorming, the W questions in order, and grain.",
           "evidence": "artifact",
-          "artifacts": ["BEAM Interview Outline.docx"]
+          "artifacts": [
+            "BEAM Interview Outline.docx"
+          ]
         },
         {
           "id": "profile_source_data",
@@ -99,14 +108,20 @@
           "source": "doc",
           "text": "Review and update the data warehouse bus matrix",
           "evidence": "artifact",
-          "artifacts": ["EDW Bus Matrix.xlsx"]
+          "artifacts": [
+            "EDW Bus Matrix.xlsx"
+          ]
         }
       ],
       "gate": {
         "id": "gate_star_schema",
         "text": "Stakeholder acceptance of the star schema design",
         "source": "doc",
-        "requires": ["conduct_interviews", "create_conceptual_erd", "update_bus_matrix"]
+        "requires": [
+          "conduct_interviews",
+          "create_conceptual_erd",
+          "update_bus_matrix"
+        ]
       }
     },
     {
@@ -275,7 +290,10 @@
           "source": "doc",
           "text": "Create the new Power BI model from the .pbit template",
           "evidence": "artifact",
-          "artifacts": ["TEMPLATE - Semantic Model DW & Fabric.pbit", "TEMPLATE - Semantic Model Fabric.pbit"]
+          "artifacts": [
+            "TEMPLATE - Semantic Model DW & Fabric.pbit",
+            "TEMPLATE - Semantic Model Fabric.pbit"
+          ]
         },
         {
           "id": "import_dimensional_tables",
@@ -305,28 +323,41 @@
           "source": "doc",
           "text": "Create measures and calculation groups",
           "evidence": "derived",
-          "derived": "has_measures"
+          "derived": "has_measures",
+          "detail": "Give each measure a description explaining what it calculates as you go. The check comes later, at AI Readiness; the writing is cheapest now."
         },
         {
           "id": "test_dax_performance",
           "source": "doc",
           "text": "Run initial tests and improve DAX performance",
           "evidence": "lint",
-          "checks": ["nested_if", "iferror_usage", "use_divide_function", "shortened_calculate", "fully_qualified_columns"]
+          "checks": [
+            "nested_if",
+            "iferror_usage",
+            "use_divide_function",
+            "shortened_calculate",
+            "fully_qualified_columns"
+          ]
         },
         {
           "id": "review_data_classification",
           "source": "doc",
           "text": "Review data classification for the fact and dimension tables",
           "evidence": "lint",
-          "checks": ["data_categories"]
+          "checks": [
+            "data_categories"
+          ]
         },
         {
           "id": "setup_security_roles",
           "source": "doc",
           "text": "Set up security roles for CLS and RLS, and create or update AAD groups",
           "evidence": "lint",
-          "checks": ["rls_roles_defined", "rls_admin_role", "rls_general_role"]
+          "checks": [
+            "rls_roles_defined",
+            "rls_admin_role",
+            "rls_general_role"
+          ]
         },
         {
           "id": "publish_to_test_workspace",
@@ -334,7 +365,8 @@
           "text": "Publish to the testing workspace in the Service",
           "evidence": "external"
         }
-      ]
+      ],
+      "heads_up": "Write descriptions as you create tables, columns, and measures. They are not checked until AI Readiness, because demanding them mid-build buries everything else -- but writing 80 of them in one sitting afterwards is the worst way to get them. Data Agent reads the first 200 characters of each one."
     },
     {
       "id": "ai_readiness",
@@ -349,7 +381,13 @@
           "text": "Write descriptions for every table, column, and measure",
           "detail": "Data Agent reads the first 200 characters of a description to decide what an object is for.",
           "evidence": "lint",
-          "checks": ["table_descriptions", "column_descriptions", "measure_descriptions", "row_label_defined", "synonyms"]
+          "checks": [
+            "table_descriptions",
+            "column_descriptions",
+            "measure_descriptions",
+            "row_label_defined",
+            "synonyms"
+          ]
         },
         {
           "id": "configure_ai_schema",
@@ -357,7 +395,14 @@
           "text": "Configure Prep for AI > Simplify data schema",
           "detail": "Select only the tables, columns, and measures the agent needs. Selecting everything defeats the purpose.",
           "evidence": "lint",
-          "checks": ["ai_schema_configured", "ai_schema_scope", "ai_schema_dependencies", "ai_schema_helper_objects", "ai_schema_duplicate_measures", "noise_fields_excluded"]
+          "checks": [
+            "ai_schema_configured",
+            "ai_schema_scope",
+            "ai_schema_dependencies",
+            "ai_schema_helper_objects",
+            "ai_schema_duplicate_measures",
+            "noise_fields_excluded"
+          ]
         },
         {
           "id": "author_ai_instructions",
@@ -365,7 +410,17 @@
           "text": "Write the AI instructions",
           "detail": "Business terminology, fiscal periods, preferred measures per question type, and how to use calculation groups or field parameters.",
           "evidence": "lint",
-          "checks": ["ai_instructions_present", "ai_instructions_conciseness", "ai_instructions_terminology", "ai_instructions_time_periods", "ai_instructions_metric_preferences", "ai_instructions_ambiguous_dates", "ai_instructions_groupings", "ai_instructions_dax_examples", "ai_instructions_advanced_objects"]
+          "checks": [
+            "ai_instructions_present",
+            "ai_instructions_conciseness",
+            "ai_instructions_terminology",
+            "ai_instructions_time_periods",
+            "ai_instructions_metric_preferences",
+            "ai_instructions_ambiguous_dates",
+            "ai_instructions_groupings",
+            "ai_instructions_dax_examples",
+            "ai_instructions_advanced_objects"
+          ]
         },
         {
           "id": "create_verified_answers",
@@ -373,7 +428,13 @@
           "text": "Create verified answers for the most common questions",
           "detail": "Five to seven complete trigger questions each, plus up to three filters.",
           "evidence": "lint",
-          "checks": ["verified_answers", "verified_answer_quality", "verified_answer_phrasing", "verified_answer_filters", "hidden_field_conflicts"]
+          "checks": [
+            "verified_answers",
+            "verified_answer_quality",
+            "verified_answer_phrasing",
+            "verified_answer_filters",
+            "hidden_field_conflicts"
+          ]
         }
       ]
     },
@@ -387,7 +448,9 @@
           "source": "doc",
           "text": "Set up the UAT sheet from the template to track bugs and fixes",
           "evidence": "artifact",
-          "artifacts": ["TEMPLATE - Semantic Model UAT.xlsx"]
+          "artifacts": [
+            "TEMPLATE - Semantic Model UAT.xlsx"
+          ]
         },
         {
           "id": "verify_data_accuracy",
@@ -418,7 +481,11 @@
         "id": "gate_uat",
         "text": "Stakeholder acceptance of UAT",
         "source": "doc",
-        "requires": ["setup_uat_sheet", "verify_data_accuracy", "test_security_roles"]
+        "requires": [
+          "setup_uat_sheet",
+          "verify_data_accuracy",
+          "test_security_roles"
+        ]
       }
     },
     {
@@ -507,7 +574,10 @@
         "id": "gate_closeout",
         "text": "Stakeholder approval of project closeout",
         "source": "doc",
-        "requires": ["review_against_scope", "address_parking_lot"]
+        "requires": [
+          "review_against_scope",
+          "address_parking_lot"
+        ]
       }
     }
   ]

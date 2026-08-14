@@ -187,6 +187,16 @@ export function SidekickView({ suggestedPath, onPickFolder }: SidekickViewProps)
                     </div>
                   )}
 
+                  {/* Advice that belongs here even though it is checked later */}
+                  {stage.heads_up && (
+                    <div className="rounded-md border border-blue-500/25 bg-blue-500/[0.05] p-3">
+                      <p className="text-[10px] uppercase tracking-wider font-bold text-blue-400 mb-1">
+                        Worth doing now
+                      </p>
+                      <p className="text-xs text-blue-200/80 leading-relaxed">{stage.heads_up}</p>
+                    </div>
+                  )}
+
                   {stageSteps.map((step) => (
                     <StepCard
                       key={step.id}

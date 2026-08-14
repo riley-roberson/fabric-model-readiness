@@ -76,6 +76,7 @@ def _serialize_process() -> dict:
                 "title": stage.title,
                 "proposed": stage.proposed,
                 "proposal_note": stage.proposal_note,
+                "heads_up": stage.heads_up,
                 "steps": [
                     {
                         "id": step.id,

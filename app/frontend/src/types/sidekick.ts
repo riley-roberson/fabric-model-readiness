@@ -30,6 +30,8 @@ export interface ProcessStage {
   title: string;
   proposed: boolean;
   proposal_note: string;
+  /** Advice that belongs here but is enforced at a later stage. */
+  heads_up: string;
   steps: ProcessStep[];
   gate: ProcessGate | null;
 }

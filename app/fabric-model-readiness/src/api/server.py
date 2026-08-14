@@ -16,7 +16,7 @@ src_dir = str(Path(__file__).resolve().parent.parent)
 if src_dir not in sys.path:
     sys.path.insert(0, src_dir)
 
-from api.routes import enforcer, historian, scout
+from api.routes import enforcer, historian, scout, sidekick
 from shared.config import API_HOST, API_PORT
 
 
@@ -42,6 +42,7 @@ app.add_middleware(
 app.include_router(scout.router)
 app.include_router(enforcer.router)
 app.include_router(historian.router)
+app.include_router(sidekick.router)
 
 
 @app.get("/api/health")

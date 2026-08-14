@@ -173,6 +173,8 @@ class ColumnInfo(BaseModel):
     summarize_by: str = ""
     sort_by_column: str = ""
     display_folder: str = ""
+    # Q&A / Data Agent row label for the table (TMDL/TMSL isDefaultLabel).
+    is_default_label: bool = False
 
 
 class MeasureInfo(BaseModel):
@@ -201,6 +203,9 @@ class TableInfo(BaseModel):
     measures: list[MeasureInfo] = Field(default_factory=list)
     is_hidden: bool = False
     is_date_table: bool = False
+    # Structural tables that should be exempt from dimension-shaped checks.
+    is_calculation_group: bool = False
+    is_field_parameter: bool = False
 
 
 class RoleInfo(BaseModel):
@@ -225,3 +230,5 @@ class SemanticModel(BaseModel):
     relationships: list[RelationshipInfo] = Field(default_factory=list)
     roles: list[RoleInfo] = Field(default_factory=list)
     copilot: CopilotConfig = Field(default_factory=CopilotConfig)
+    # True when the model defines DAX user-defined functions (definition/functions/).
+    has_udfs: bool = False

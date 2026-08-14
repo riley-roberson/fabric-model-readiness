@@ -294,35 +294,71 @@ function parseTmdlTable(content: string): TableInfo | null {
   const lines = content.split("\n");
   if (!lines.length) return null;
 
-  const tableName = extractTmdlName(lines[0], "table");
+  // TMDL carries descriptions as /// comments *above* the declaration, so the
+  // table line is not necessarily line 0. Scan for it, collecting any leading
+  // doc comment as the table description.
+  let declIndex = -1;
+  let tableName = "";
+  const doc: string[] = [];
+  for (let idx = 0; idx < lines.length; idx++) {
+    const stripped = lines[idx].trim();
+    if (!stripped) continue;
+    if (stripped.startsWith("///")) {
+      doc.push(stripped.slice(3).trim());
+      continue;
+    }
+    const name = extractTmdlName(stripped, "table");
+    if (name) {
+      declIndex = idx;
+      tableName = name;
+    }
+    break;
+  }
+
   if (!tableName) return null;
 
   const columns: ColumnInfo[] = [];
   const measures: MeasureInfo[] = [];
   let isHidden = false;
-  let description = "";
+  let description = doc.join(" ").trim();
   let isDateTable = false;
 
-  let i = 1;
+  // Doc comment accumulated for the next column/measure declaration.
+  let pendingDoc: string[] = [];
+
+  let i = declIndex + 1;
   while (i < lines.length) {
     const stripped = lines[i].trim();
+
+    if (stripped.startsWith("///")) {
+      pendingDoc.push(stripped.slice(3).trim());
+      i += 1;
+      continue;
+    }
 
     if (stripped === "isHidden") {
       isHidden = true;
     } else if (stripped.startsWith("description:")) {
+      // Not valid TMDL -- the Microsoft parser rejects it -- but tolerated here
+      // so models hand-edited into that shape still report a value.
       description = stripped.split(":").slice(1).join(":").trim().replace(/^['"]|['"]$/g, "");
     } else if (stripped.startsWith("column ")) {
-      const [col, endI] = parseTmdlColumn(lines, i, tableName);
+      const [col, endI] = parseTmdlColumn(lines, i, tableName, pendingDoc.join(" ").trim());
+      pendingDoc = [];
       if (col) columns.push(col);
       i = endI;
       continue;
     } else if (stripped.startsWith("measure ")) {
-      const [measure, endI] = parseTmdlMeasure(lines, i, tableName);
+      const [measure, endI] = parseTmdlMeasure(lines, i, tableName, pendingDoc.join(" ").trim());
+      pendingDoc = [];
       if (measure) measures.push(measure);
       i = endI;
       continue;
     } else if (stripped.includes("__PBI_TimeIntelligenceEnabled") && stripped.includes("= 1")) {
       isDateTable = true;
+    } else if (stripped) {
+      // Anything else ends the run of doc comments.
+      pendingDoc = [];
     }
 
     i += 1;
@@ -344,12 +380,13 @@ function parseTmdlColumn(
   lines: string[],
   start: number,
   tableName: string,
+  doc = "",
 ): [ColumnInfo | null, number] {
   const colName = extractTmdlName(lines[start].trim(), "column");
   if (!colName) return [null, start + 1];
 
   let dataType = "";
-  let description = "";
+  let description = doc;
   let isHidden = false;
   let summarizeBy = "";
   let sortByColumn = "";
@@ -396,6 +433,7 @@ function parseTmdlMeasure(
   lines: string[],
   start: number,
   tableName: string,
+  doc = "",
 ): [MeasureInfo | null, number] {
   const stripped = lines[start].trim();
   const eqIdx = stripped.indexOf("=");
@@ -406,7 +444,7 @@ function parseTmdlMeasure(
   if (!measureName) return [null, start + 1];
 
   const expressionParts = [stripped.slice(eqIdx + 1).trim()];
-  let description = "";
+  let description = doc;
   let isHidden = false;
   let displayFolder = "";
 

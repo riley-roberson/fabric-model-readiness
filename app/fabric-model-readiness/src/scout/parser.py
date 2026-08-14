@@ -489,15 +489,32 @@ def _parse_tmdl_table(file_path: Path) -> TableInfo | None:
     if not lines:
         return None
 
-    # First line: table Name or table 'Name With Spaces'
-    table_name = _extract_tmdl_name(lines[0], "table")
+    # TMDL carries descriptions as /// comments *above* the declaration, so the
+    # table line is not necessarily line 0. Scan for it, collecting any leading
+    # doc comment as the table description.
+    decl_index = -1
+    table_name = ""
+    doc: list[str] = []
+    for idx, line in enumerate(lines):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("///"):
+            doc.append(stripped[3:].strip())
+            continue
+        name = _extract_tmdl_name(stripped, "table")
+        if name:
+            decl_index = idx
+            table_name = name
+        break
+
     if not table_name:
         return None
 
     columns: list[ColumnInfo] = []
     measures: list[MeasureInfo] = []
     is_hidden = False
-    description = ""
+    description = " ".join(doc).strip()
     is_date_table = False
 
     # Both are whole-file properties, so test the raw text rather than
@@ -505,20 +522,31 @@ def _parse_tmdl_table(file_path: Path) -> TableInfo | None:
     is_calculation_group = bool(re.search(r"^\s*calculationGroup\b", content, re.MULTILINE))
     is_field_parameter = "ParameterMetadata" in content
 
-    i = 1
+    # Doc comment accumulated for the next column/measure declaration.
+    pending_doc: list[str] = []
+
+    i = decl_index + 1
     while i < len(lines):
         line = lines[i]
         stripped = line.strip()
+
+        if stripped.startswith("///"):
+            pending_doc.append(stripped[3:].strip())
+            i += 1
+            continue
 
         # Table-level properties
         if stripped == "isHidden":
             is_hidden = True
         elif stripped.startswith("description:"):
+            # Not valid TMDL -- the Microsoft parser rejects it -- but tolerated
+            # here so models hand-edited into that shape still report a value.
             description = stripped.split(":", 1)[1].strip().strip("'\"")
 
         # Column block
         elif stripped.startswith("column "):
-            col, end_i = _parse_tmdl_column(lines, i, table_name)
+            col, end_i = _parse_tmdl_column(lines, i, table_name, " ".join(pending_doc).strip())
+            pending_doc = []
             if col:
                 columns.append(col)
             i = end_i
@@ -526,7 +554,8 @@ def _parse_tmdl_table(file_path: Path) -> TableInfo | None:
 
         # Measure block
         elif stripped.startswith("measure "):
-            measure, end_i = _parse_tmdl_measure(lines, i, table_name)
+            measure, end_i = _parse_tmdl_measure(lines, i, table_name, " ".join(pending_doc).strip())
+            pending_doc = []
             if measure:
                 measures.append(measure)
             i = end_i
@@ -535,6 +564,10 @@ def _parse_tmdl_table(file_path: Path) -> TableInfo | None:
         # Date table annotation
         elif "__PBI_TimeIntelligenceEnabled" in stripped and "= 1" in stripped:
             is_date_table = True
+
+        # Anything else ends the run of doc comments.
+        elif stripped:
+            pending_doc = []
 
         i += 1
 
@@ -550,14 +583,20 @@ def _parse_tmdl_table(file_path: Path) -> TableInfo | None:
     )
 
 
-def _parse_tmdl_column(lines: list[str], start: int, table_name: str) -> tuple[ColumnInfo | None, int]:
-    """Parse a column block from TMDL lines. Returns (ColumnInfo, next_line_index)."""
+def _parse_tmdl_column(
+    lines: list[str], start: int, table_name: str, doc: str = ""
+) -> tuple[ColumnInfo | None, int]:
+    """Parse a column block from TMDL lines. Returns (ColumnInfo, next_line_index).
+
+    `doc` is the /// comment block preceding the declaration, which is how TMDL
+    expresses a description.
+    """
     col_name = _extract_tmdl_name(lines[start].strip(), "column")
     if not col_name:
         return None, start + 1
 
     data_type = ""
-    description = ""
+    description = doc
     is_hidden = False
     summarize_by = ""
     sort_by_column = ""
@@ -610,8 +649,14 @@ def _parse_tmdl_column(lines: list[str], start: int, table_name: str) -> tuple[C
     ), i
 
 
-def _parse_tmdl_measure(lines: list[str], start: int, table_name: str) -> tuple[MeasureInfo | None, int]:
-    """Parse a measure block from TMDL lines. Returns (MeasureInfo, next_line_index)."""
+def _parse_tmdl_measure(
+    lines: list[str], start: int, table_name: str, doc: str = ""
+) -> tuple[MeasureInfo | None, int]:
+    """Parse a measure block from TMDL lines. Returns (MeasureInfo, next_line_index).
+
+    `doc` is the /// comment block preceding the declaration, which is how TMDL
+    expresses a description.
+    """
     stripped = lines[start].strip()
     # measure 'Name' = EXPRESSION or measure Name = EXPRESSION
     parts = stripped.split("=", 1)
@@ -625,7 +670,7 @@ def _parse_tmdl_measure(lines: list[str], start: int, table_name: str) -> tuple[
 
     expression_parts = [parts[1].strip()]
 
-    description = ""
+    description = doc
     is_hidden = False
     display_folder = ""
 

@@ -27,8 +27,8 @@ FINDINGS_DIR.mkdir(exist_ok=True)
 # ---------------------------------------------------------------------------
 
 ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
-LLM_MODEL_FAST: str = "claude-sonnet-4-5-20250929"
-LLM_MODEL_REASONING: str = "claude-opus-4-6"
+LLM_MODEL_FAST: str = os.getenv("LLM_MODEL_FAST", "claude-sonnet-5")
+LLM_MODEL_REASONING: str = os.getenv("LLM_MODEL_REASONING", "claude-opus-5")
 
 # ---------------------------------------------------------------------------
 # Scoring weights (must sum to 1.0)

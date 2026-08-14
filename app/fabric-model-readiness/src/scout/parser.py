@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import shutil
 import subprocess
 import tempfile
@@ -117,6 +118,7 @@ def _build_model_from_bim(bim: dict, model_name: str, pbix_path: Path) -> Semant
         relationships=relationships,
         roles=roles,
         copilot=CopilotConfig(),
+        has_udfs=bool(model_def.get("functions")),
     )
 
 
@@ -141,6 +143,7 @@ def _parse_model_def(model_def: dict) -> tuple[list[TableInfo], list[Relationshi
                 summarize_by=c.get("summarizeBy", ""),
                 sort_by_column=c.get("sortByColumn", ""),
                 display_folder=c.get("displayFolder", ""),
+                is_default_label=bool(c.get("isDefaultLabel", False)),
             )
             for c in t.get("columns", [])
         ]
@@ -155,6 +158,10 @@ def _parse_model_def(model_def: dict) -> tuple[list[TableInfo], list[Relationshi
             )
             for m in t.get("measures", [])
         ]
+        # Field parameters are ordinary tables distinguished only by an
+        # extendedProperty; there is no dedicated TMSL key to test.
+        is_field_parameter = "ParameterMetadata" in json.dumps(t)
+
         tables.append(
             TableInfo(
                 name=t.get("name", ""),
@@ -163,6 +170,8 @@ def _parse_model_def(model_def: dict) -> tuple[list[TableInfo], list[Relationshi
                 measures=measures,
                 is_hidden=t.get("isHidden", False),
                 is_date_table=is_date_table,
+                is_calculation_group=t.get("calculationGroup") is not None,
+                is_field_parameter=is_field_parameter,
             )
         )
 
@@ -387,6 +396,7 @@ def _parse_tmsl(folder: Path, model_name: str) -> SemanticModel:
         relationships=relationships,
         roles=roles,
         copilot=copilot,
+        has_udfs=bool(model_def.get("functions")),
     )
 
 
@@ -453,6 +463,10 @@ def _parse_tmdl_folder(model_dir: Path, model_name: str, source_path: str) -> Se
                 if "date" in t.name.lower() or "calendar" in t.name.lower():
                     t.is_date_table = True
 
+    # DAX user-defined functions live in their own folder alongside tables/.
+    functions_dir = model_dir / "functions"
+    has_udfs = functions_dir.is_dir() and any(functions_dir.glob("*.tmdl"))
+
     return SemanticModel(
         name=model_name,
         path=source_path,
@@ -460,6 +474,7 @@ def _parse_tmdl_folder(model_dir: Path, model_name: str, source_path: str) -> Se
         tables=tables,
         relationships=relationships,
         roles=roles,
+        has_udfs=has_udfs,
     )
 
 
@@ -484,6 +499,11 @@ def _parse_tmdl_table(file_path: Path) -> TableInfo | None:
     is_hidden = False
     description = ""
     is_date_table = False
+
+    # Both are whole-file properties, so test the raw text rather than
+    # threading state through the line loop below.
+    is_calculation_group = bool(re.search(r"^\s*calculationGroup\b", content, re.MULTILINE))
+    is_field_parameter = "ParameterMetadata" in content
 
     i = 1
     while i < len(lines):
@@ -525,6 +545,8 @@ def _parse_tmdl_table(file_path: Path) -> TableInfo | None:
         measures=measures,
         is_hidden=is_hidden,
         is_date_table=is_date_table,
+        is_calculation_group=is_calculation_group,
+        is_field_parameter=is_field_parameter,
     )
 
 
@@ -541,6 +563,7 @@ def _parse_tmdl_column(lines: list[str], start: int, table_name: str) -> tuple[C
     sort_by_column = ""
     display_folder = ""
     data_category = ""
+    is_default_label = False
 
     indent = _get_indent(lines[start])
     i = start + 1
@@ -569,6 +592,8 @@ def _parse_tmdl_column(lines: list[str], start: int, table_name: str) -> tuple[C
             display_folder = stripped.split(":", 1)[1].strip()
         elif stripped.startswith("dataCategory:"):
             data_category = stripped.split(":", 1)[1].strip()
+        elif stripped == "isDefaultLabel" or re.match(r"^isDefaultLabel:\s*true$", stripped, re.IGNORECASE):
+            is_default_label = True
         i += 1
 
     return ColumnInfo(
@@ -581,6 +606,7 @@ def _parse_tmdl_column(lines: list[str], start: int, table_name: str) -> tuple[C
         sort_by_column=sort_by_column,
         display_folder=display_folder,
         data_category=data_category,
+        is_default_label=is_default_label,
     ), i
 
 

@@ -1,5 +1,5 @@
 # Build script for Fabric Model AI Readiness desktop app
-# Run from the project root: .\build.ps1
+# Run from the app/ directory: .\build.ps1
 
 $ErrorActionPreference = "Stop"
 
@@ -18,8 +18,6 @@ Pop-Location
 Write-Host ""
 Write-Host "=== Building Electron App ===" -ForegroundColor Cyan
 
-Push-Location app
-
 # Install Node dependencies
 npm install
 
@@ -28,7 +26,6 @@ npm run build
 
 # Package as installer
 npm run build:electron
-Pop-Location
 
 Write-Host ""
 Write-Host "=== Build Complete ===" -ForegroundColor Green

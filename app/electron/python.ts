@@ -30,7 +30,7 @@ export class PythonBackend {
       }
 
       const cwd = isDev
-        ? path.resolve(__dirname, "../../fabric-model-readiness/src")
+        ? path.resolve(__dirname, "../fabric-model-readiness/src")
         : undefined;
 
       this.process = spawn(command, args, {

@@ -11,7 +11,7 @@ files:
   - dist-frontend/**/*
 
 extraResources:
-  - from: ../fabric-model-readiness/dist/backend/
+  - from: fabric-model-readiness/dist/backend/
     to: backend
     filter:
       - "**/*"

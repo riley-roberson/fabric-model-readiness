@@ -49,7 +49,7 @@ async function main() {
   } catch {
     console.error(
       "Python backend not found on port 8000. Start it first:\n" +
-      "  cd fabric-model-readiness/src && py -m api.server --port 8000"
+      "  cd app/fabric-model-readiness/src && py -m api.server --port 8000"
     );
     vite.kill();
     process.exit(1);

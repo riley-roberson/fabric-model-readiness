@@ -45,6 +45,8 @@ export interface ColumnInfo {
   summarize_by: string;
   sort_by_column: string;
   display_folder: string;
+  /** Q&A row label for the table (TMDL/TMSL isDefaultLabel). */
+  is_default_label: boolean;
 }
 
 export interface MeasureInfo {
@@ -73,6 +75,8 @@ export interface TableInfo {
   measures: MeasureInfo[];
   is_hidden: boolean;
   is_date_table: boolean;
+  is_calculation_group: boolean;
+  is_field_parameter: boolean;
 }
 
 export interface RoleInfo {
@@ -97,6 +101,8 @@ export interface SemanticModel {
   relationships: RelationshipInfo[];
   roles: RoleInfo[];
   copilot: CopilotConfig;
+  /** True when the model defines DAX user-defined functions (definition/functions/). */
+  has_udfs: boolean;
 }
 
 // ---------------------------------------------------------------------------

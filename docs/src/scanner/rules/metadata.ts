@@ -6,6 +6,8 @@ const GEOGRAPHY_KEYWORDS = ["city", "state", "country", "zip", "postal", "region
 export function check(model: SemanticModel): Finding[] {
   const findings: Finding[] = [];
 
+  checkRowLabels(model, findings);
+
   for (const table of model.tables) {
     // Table descriptions
     if (!table.description.trim()) {
@@ -79,4 +81,37 @@ export function check(model: SemanticModel): Finding[] {
   }
 
   return findings;
+}
+
+/**
+ * Row labels tell Q&A and Data Agent which column names a row. Without one,
+ * "show me the top customers" has no obvious column to return.
+ * The checklist calls this out especially for dimension tables.
+ */
+function checkRowLabels(model: SemanticModel, findings: Finding[]): void {
+  // A dimension is a table something else points at. Tables on the many side are
+  // facts, and disconnected tables are a structural problem already reported by
+  // star_schema_structure -- neither should be asked for a row label.
+  const oneSideTables = new Set(model.relationships.map((r) => r.to_table));
+  const manySideTables = new Set(model.relationships.map((r) => r.from_table));
+
+  for (const table of model.tables) {
+    if (table.is_hidden || table.is_calculation_group || table.is_field_parameter) continue;
+    if (!oneSideTables.has(table.name)) continue;
+    if (manySideTables.has(table.name)) continue;
+    if (table.columns.length < 2) continue;
+
+    if (table.columns.some((c) => c.is_default_label)) continue;
+
+    findings.push(makeFinding({
+      category: "metadata_completeness",
+      check: "row_label_defined",
+      severity: "medium",
+      object: table.name,
+      object_type: "table",
+      message: `Dimension table '${table.name}' has no row label defined. Data Agent has no designated column to identify a row by.`,
+      recommendation: "In Power BI Desktop, set the row label to the column that names the entity (e.g. Customer Name on Customer).",
+      auto_fixable: true,
+    }));
+  }
 }

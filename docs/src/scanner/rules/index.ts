@@ -25,11 +25,18 @@ const RULE_MODULES: RuleModule[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Check-to-profile mapping (mirrors Python CHECK_PROFILES in shared/config.py)
+// Check-to-profile mapping
+//
+// "ai" checks are derived from the Microsoft "Semantic Model Preparation
+// Checklist for Fabric Data Agent"; the section each one comes from is noted
+// below. "org" checks are internal Power BI standards. "both" is shared.
+//
+// Checklist items that cannot be observed in a .SemanticModel folder live in
+// src/checklist/manual.ts and are tracked but not scored.
 // ---------------------------------------------------------------------------
 
 export const CHECK_PROFILES: Record<string, string> = {
-  // Schema design
+  // Schema design -- checklist: Semantic Model Optimization
   table_naming: "both",
   column_naming: "both",
   measure_naming: "both",
@@ -37,21 +44,26 @@ export const CHECK_PROFILES: Record<string, string> = {
   fact_table_hidden: "both",
   surrogate_key_hidden: "both",
   cross_table_disambiguation: "ai",
-  // Metadata completeness
+  star_schema_structure: "ai",
+  business_friendly_names: "ai",
+  unnecessary_columns: "ai",
+  // Metadata completeness -- checklist: Semantic Model Optimization
   table_descriptions: "ai",
   column_descriptions: "ai",
   measure_descriptions: "ai",
   data_categories: "ai",
   synonyms: "ai",
+  row_label_defined: "ai",
   // Relationships
   missing_relationships: "ai",
   inactive_relationships: "both",
   cardinality_correctness: "both",
   bidirectional_relationship: "org",
   ambiguous_paths: "both",
-  // Measures and calculations
+  // Measures and calculations -- checklist: Semantic Model Optimization
   helper_measures_exposed: "ai",
   time_intelligence: "ai",
+  explicit_measures: "ai",
   duplicate_measures: "both",
   measure_table_required: "org",
   direct_measure_reference: "org",
@@ -60,17 +72,33 @@ export const CHECK_PROFILES: Record<string, string> = {
   iferror_usage: "org",
   nested_if: "org",
   use_divide_function: "org",
-  // AI preparation
+  // AI preparation -- checklist: AI Data Schema
   ai_schema_configured: "ai",
-  ai_instructions_present: "ai",
-  ai_instructions_quality: "ai",
-  verified_answers: "ai",
-  verified_answer_quality: "ai",
+  ai_schema_scope: "ai",
+  ai_schema_dependencies: "ai",
+  ai_schema_helper_objects: "ai",
+  ai_schema_duplicate_measures: "ai",
   noise_fields_excluded: "ai",
   hidden_field_conflicts: "ai",
-  // Data types and aggregation
+  // AI preparation -- checklist: Verified Answers
+  verified_answers: "ai",
+  verified_answer_quality: "ai",
+  verified_answer_phrasing: "ai",
+  verified_answer_filters: "ai",
+  // AI preparation -- checklist: AI Instructions
+  ai_instructions_present: "ai",
+  ai_instructions_conciseness: "ai",
+  ai_instructions_terminology: "ai",
+  ai_instructions_time_periods: "ai",
+  ai_instructions_metric_preferences: "ai",
+  ai_instructions_ambiguous_dates: "ai",
+  ai_instructions_groupings: "ai",
+  ai_instructions_dax_examples: "ai",
+  ai_instructions_advanced_objects: "ai",
+  // Data types and aggregation -- checklist: Semantic Model Optimization
   default_summarization: "both",
   sort_by_column: "ai",
+  incorrect_data_types: "ai",
   avoid_float_types: "org",
   // Data consistency
   partitioned_tables: "org",

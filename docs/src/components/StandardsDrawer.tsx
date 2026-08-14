@@ -6,13 +6,13 @@ interface StandardsDrawerProps {
 }
 
 const categories = [
-  { name: "AI Preparation", weight: 20, description: "Schema visibility, Copilot instructions, verified answers, noise field exclusion", profiles: ["ai"] as string[] },
-  { name: "Metadata Completeness", weight: 20, description: "Table/column/measure descriptions, synonyms, data categories", profiles: ["ai"] as string[] },
-  { name: "Schema Design", weight: 15, description: "Star schema structure, table naming, display folders, wide table detection", profiles: ["ai", "shared"] as string[] },
+  { name: "AI Preparation", weight: 20, description: "AI data schema scope and dependencies, verified answer triggers and filters, AI instruction coverage", profiles: ["ai"] as string[] },
+  { name: "Metadata Completeness", weight: 20, description: "Table/column/measure descriptions, synonyms, data categories, row labels", profiles: ["ai"] as string[] },
+  { name: "Schema Design", weight: 15, description: "Star schema structure, business-friendly names, unnecessary columns, wide table detection", profiles: ["ai", "shared"] as string[] },
   { name: "Measures & Calculations", weight: 15, description: "Explicit DAX measures, time intelligence, qualified references, no duplicates", profiles: ["ai", "org", "shared"] as string[] },
   { name: "Org Standards", weight: 10, description: "Display folders, RLS roles, date table marked, USERELATIONSHIP usage", profiles: ["org"] as string[] },
   { name: "Relationships", weight: 10, description: "No orphaned tables, no bidirectional or ambiguous paths, inactive relationship handling", profiles: ["ai", "shared"] as string[] },
-  { name: "Data Types", weight: 5, description: "Correct summarization settings, sort-by-column, no unnecessary floats", profiles: ["ai", "org", "shared"] as string[] },
+  { name: "Data Types", weight: 5, description: "Correct data types, summarization settings, sort-by-column, no unnecessary floats", profiles: ["ai", "org", "shared"] as string[] },
   { name: "Data Consistency", weight: 5, description: "No year-partitioned tables, consistent naming patterns", profiles: ["org"] as string[] },
 ];
 
@@ -24,11 +24,21 @@ const ratings = [
 ];
 
 const keyStandards = [
-  { title: "Star Schema Required", detail: "All models must be star schemas -- no flat tables or snowflakes.", profile: "shared" },
+  { title: "Star Schema Required", detail: "No flat, denormalized, or pivoted tables -- clear facts and dimensions.", profile: "shared" },
+  { title: "Narrow AI Data Schema", detail: "Select only relevant tables, columns, and measures. Selecting nearly everything defeats Prep for AI.", profile: "ai" },
+  { title: "Complete Schema Dependencies", detail: "Every object a selected measure references must also be in the AI data schema.", profile: "ai" },
+  { title: "Business-Friendly Names", detail: "Spell names the way users say them -- not TR_AMT or CustName.", profile: "ai" },
+  { title: "Descriptions Everywhere", detail: "Tables, columns, and measures need concise descriptions for the agent to read.", profile: "ai" },
+  { title: "Row Labels on Dimensions", detail: "Each dimension needs a designated column that names the row.", profile: "ai" },
+  { title: "Instructions Must Teach", detail: "Terminology, fiscal periods, metric preferences, ambiguous dates, and example DAX.", profile: "ai" },
+  { title: "Ambiguous Dates Resolved", detail: "When a table has several date columns, instructions must say which is the default.", profile: "ai" },
+  { title: "Advanced Objects Explained", detail: "Calculation groups, field parameters, and DAX UDFs must be described in the instructions.", profile: "ai" },
+  { title: "Robust Trigger Questions", detail: "5-7 complete questions per verified answer, formal and conversational, with filters.", profile: "ai" },
+  { title: "No Helper Objects Exposed", detail: "Intermediate calculations and key/sort columns stay out of the AI schema.", profile: "ai" },
   { title: "Fact Tables Hidden", detail: "Fact tables hidden from users; only surrogate keys + fact columns.", profile: "shared" },
   { title: "Surrogate Keys Hidden", detail: "Surrogate keys on dimension tables must be hidden.", profile: "shared" },
-  { title: "Display Folders Required", detail: "Columns and measures must be organized in display folders.", profile: "org" },
   { title: "No Default Aggregations", detail: "All aggregations must be explicit DAX measures.", profile: "shared" },
+  { title: "Display Folders Required", detail: "Columns and measures must be organized in display folders.", profile: "org" },
   { title: "Dedicated Measure Tables", detail: "All measures stored in dedicated measure tables.", profile: "org" },
   { title: "Fully Qualified References", detail: "Always use 'Table'[Column] syntax, never unqualified.", profile: "org" },
   { title: "No Unnecessary Floats", detail: "Avoid float data types unless strictly necessary.", profile: "org" },
@@ -124,8 +134,17 @@ export function StandardsDrawer({ open, onClose }: StandardsDrawerProps) {
                   <span className="text-xs font-semibold text-gray-800">Microsoft Prep for AI</span>
                 </div>
                 <p className="text-[11px] text-gray-500 leading-snug">
-                  Checks tagged <span className="text-violet-600">ai</span> + <span className="text-gray-700">shared</span>.
-                  Focuses on Copilot readiness: descriptions, synonyms, AI schema, instructions, verified answers.
+                  Checks tagged <span className="text-violet-600">ai</span> + <span className="text-gray-700">shared</span> (47 checks).
+                  Derived from Microsoft's{" "}
+                  <a
+                    href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-semantic-model"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-violet-700 hover:underline"
+                  >
+                    Semantic Model Preparation Checklist for Fabric Data Agent
+                  </a>
+                  : model optimization, AI data schema, verified answers, and AI instructions.
                 </p>
               </div>
               <div className="bg-amber-50 rounded-lg px-3 py-2.5 border border-amber-200">
@@ -144,10 +163,26 @@ export function StandardsDrawer({ open, onClose }: StandardsDrawerProps) {
                   <span className="text-xs font-semibold text-gray-800">All Checks (Default)</span>
                 </div>
                 <p className="text-[11px] text-gray-500 leading-snug">
-                  Runs every check across all categories. Full 48-check sweep with no filtering.
+                  Runs every check across all categories. Full 64-check sweep with no filtering.
                 </p>
               </div>
             </div>
+          </section>
+
+          {/* Manual verification */}
+          <section>
+            <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Manual Verification</h3>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              28 items on the Fabric Data Agent checklist describe work Scout cannot observe in a
+              <span className="font-mono text-[11px] text-gray-700"> .SemanticModel</span> folder --
+              notebook runs (Best Practice Analyzer, Memory Analyzer), Performance Analyzer, Data Agent
+              configuration, and live testing.
+            </p>
+            <p className="text-xs text-gray-500 leading-relaxed mt-2">
+              These appear in the Checklist tab as a tracked section and are{" "}
+              <span className="text-gray-800 font-semibold">excluded from the score</span>, so a model is
+              never penalized for steps the scanner cannot verify.
+            </p>
           </section>
 
           {/* Category weights */}
@@ -245,10 +280,28 @@ export function StandardsDrawer({ open, onClose }: StandardsDrawerProps) {
           <section className="pb-4">
             <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">References</h3>
             <ul className="space-y-1 text-xs text-gray-500">
-              <li>Microsoft: Prepare Semantic Model for Copilot</li>
-              <li>Microsoft: Optimize Semantic Model for Copilot</li>
-              <li>Microsoft: Semantic Model Best Practices for Data Agent</li>
-              <li>Organization: Power BI Standards document</li>
+              <li>
+                <a
+                  href="https://learn.microsoft.com/en-us/fabric/data-science/data-agent-semantic-model"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-brand-teal hover:underline"
+                >
+                  Microsoft: Semantic model preparation for Fabric Data Agent
+                </a>
+                <span className="text-gray-400"> -- source for all AI-profile checks</span>
+              </li>
+              <li>
+                <a
+                  href="https://learn.microsoft.com/en-us/power-bi/create-reports/copilot-prepare-data-ai"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-brand-teal hover:underline"
+                >
+                  Microsoft: Prep for AI documentation
+                </a>
+              </li>
+              <li>Organization: Power BI Standards document -- source for org-profile checks</li>
             </ul>
           </section>
         </div>

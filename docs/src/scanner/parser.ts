@@ -118,6 +118,7 @@ async function parseTmsl(dir: FileSystemDirectoryHandle, modelName: string): Pro
     relationships,
     roles,
     copilot,
+    has_udfs: Array.isArray(modelDef.functions) && modelDef.functions.length > 0,
   };
 }
 
@@ -148,6 +149,7 @@ function parseModelDef(modelDef: Record<string, unknown>): {
       summarize_by: String(c.summarizeBy ?? ""),
       sort_by_column: String(c.sortByColumn ?? ""),
       display_folder: String(c.displayFolder ?? ""),
+      is_default_label: Boolean(c.isDefaultLabel ?? false),
     }));
 
     const measures: MeasureInfo[] = ((t.measures ?? []) as Record<string, unknown>[]).map((m) => ({
@@ -166,6 +168,9 @@ function parseModelDef(modelDef: Record<string, unknown>): {
       measures,
       is_hidden: Boolean(t.isHidden ?? false),
       is_date_table: isDateTable,
+      is_calculation_group: t.calculationGroup != null,
+      // Field parameters carry a ParameterMetadata extended property on one column
+      is_field_parameter: JSON.stringify(t).includes("ParameterMetadata"),
     };
   });
 
@@ -201,7 +206,16 @@ async function parseTmdl(dir: FileSystemDirectoryHandle, modelName: string): Pro
   const defDir = await getSubDirectory(dir, "definition");
   if (!defDir) {
     const copilot = await parseCopilotFolder(dir);
-    return { name: modelName, path: modelName, format: "TMDL", tables: [], relationships: [], roles: [], copilot };
+    return {
+      name: modelName,
+      path: modelName,
+      format: "TMDL",
+      tables: [],
+      relationships: [],
+      roles: [],
+      copilot,
+      has_udfs: false,
+    };
   }
 
   const model = await parseTmdlFolder(defDir, modelName);
@@ -260,6 +274,10 @@ async function parseTmdlFolder(
     }
   }
 
+  // DAX user-defined functions live in definition/functions/*.tmdl
+  const functionsDir = await getSubDirectory(modelDir, "functions");
+  const hasUdfs = functionsDir ? (await listEntries(functionsDir, ".tmdl")).length > 0 : false;
+
   return {
     name: modelName,
     path: modelName,
@@ -268,6 +286,7 @@ async function parseTmdlFolder(
     relationships,
     roles,
     copilot: emptyCopilotConfig(),
+    has_udfs: hasUdfs,
   };
 }
 
@@ -309,7 +328,16 @@ function parseTmdlTable(content: string): TableInfo | null {
     i += 1;
   }
 
-  return { name: tableName, description, columns, measures, is_hidden: isHidden, is_date_table: isDateTable };
+  return {
+    name: tableName,
+    description,
+    columns,
+    measures,
+    is_hidden: isHidden,
+    is_date_table: isDateTable,
+    is_calculation_group: /^\s*calculationGroup\b/m.test(content),
+    is_field_parameter: content.includes("ParameterMetadata"),
+  };
 }
 
 function parseTmdlColumn(
@@ -327,6 +355,7 @@ function parseTmdlColumn(
   let sortByColumn = "";
   let displayFolder = "";
   let dataCategory = "";
+  let isDefaultLabel = false;
 
   const indent = getIndent(lines[start]);
   let i = start + 1;
@@ -340,6 +369,7 @@ function parseTmdlColumn(
     if (s.startsWith("dataType:")) dataType = s.split(":").slice(1).join(":").trim();
     else if (s.startsWith("description:")) description = s.split(":").slice(1).join(":").trim().replace(/^['"]|['"]$/g, "");
     else if (s === "isHidden") isHidden = true;
+    else if (s === "isDefaultLabel" || /^isDefaultLabel:\s*true$/i.test(s)) isDefaultLabel = true;
     else if (s.startsWith("summarizeBy:")) summarizeBy = s.split(":").slice(1).join(":").trim();
     else if (s.startsWith("sortByColumn:")) sortByColumn = s.split(":").slice(1).join(":").trim();
     else if (s.startsWith("displayFolder:")) displayFolder = s.split(":").slice(1).join(":").trim();
@@ -358,6 +388,7 @@ function parseTmdlColumn(
     sort_by_column: sortByColumn,
     display_folder: displayFolder,
     data_category: dataCategory,
+    is_default_label: isDefaultLabel,
   }, i];
 }
 

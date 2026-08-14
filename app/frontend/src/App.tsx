@@ -7,6 +7,7 @@ import { ApplyButton } from "@/components/ApplyButton";
 import { ResultsSummary } from "@/components/ResultsSummary";
 import { HistoryView } from "@/components/HistoryView";
 import { NavBar } from "@/components/NavBar";
+import { SidekickView } from "@/components/sidekick/SidekickView";
 import { StandardsDrawer } from "@/components/StandardsDrawer";
 import { useScan } from "@/hooks/useScan";
 import { useDecisions } from "@/hooks/useDecisions";
@@ -150,6 +151,13 @@ export default function App() {
           <HistoryView
             modelName={result?.model_name || (modelPath ? modelPath.split(/[/\\]/).pop() : undefined)}
             onBack={() => setScreen(result ? "results" : "drop")}
+          />
+        )}
+
+        {screen === "sidekick" && (
+          <SidekickView
+            suggestedPath={modelPath || undefined}
+            onPickFolder={async () => (await window.electronAPI?.selectFolder()) ?? null}
           />
         )}
       </main>

@@ -6,6 +6,20 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--prefix", "docs"],
       "port": 5173
+    },
+    {
+      "name": "scout-desktop-ui",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "vite",
+        "--config",
+        "frontend/vite.config.ts",
+        "--port",
+        "5174",
+        "--strictPort"
+      ],
+      "port": 5174,
+      "url": "http://localhost:5174"
     }
   ]
 }

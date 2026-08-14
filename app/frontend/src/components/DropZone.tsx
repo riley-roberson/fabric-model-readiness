@@ -1,13 +1,6 @@
 import { useState, useCallback, DragEvent } from "react";
 
-declare global {
-  interface Window {
-    electronAPI?: {
-      selectFolder: () => Promise<string | null>;
-      selectFile: () => Promise<string | null>;
-    };
-  }
-}
+// window.electronAPI is declared once, in vite-env.d.ts.
 
 interface DropZoneProps {
   onSelect: (path: string) => void;
